@@ -1,68 +1,42 @@
-# Simulador BDE — NGR-SEE
+# Simulador IDEB — NGR-EDU · Seplag
 
-![Simulador BDE](app/static/img/UI-BDE-INTERFACE3.png)
+Simula o IDEB da escola por etapa, a partir das taxas de aprovação do Censo
+Escolar e das proficiências do SAEB. Porta a aba "Simulador Ideb" da planilha
+do Núcleo da Seplag para o mesmo front-end do Simulador BDE.
 
-Sistema interativo para simulacao do Bonus de Desempenho Educacional (BDE) de Pernambuco.
+Página estática: não tem backend. Esta pasta é autossuficiente — o **conteúdo**
+dela (não a pasta) vai para a raiz do repositório, e o GitHub Pages serve o
+`index.html` da raiz.
 
-## O que e?
+## A regra
 
-O Simulador BDE foi desenvolvido pelo Nucleo de Gestao para Resultados na Educacao (NGR-SEE) / Seplag para facilitar a vida dos gestores escolares. Antes, o calculo do BDE era feito manualmente em planilhas Excel. Agora, basta preencher os dados em um passo a passo guiado e o sistema faz todo o calculo automaticamente.
+IDEB = N × P, por etapa (não existe IDEB único da escola).
 
-## Funcionalidades
+- **P (fluxo):** média harmônica das taxas de aprovação dos anos da etapa.
+  Ano que a escola não tem fica em branco e fora da média.
+- **N (aprendizado):** média das notas de LP e MT no SAEB, cada uma
+  padronizada por (proficiência − Sinf) ÷ (Ssup − Sinf) × 10, com os limites
+  do SAEB 1997 (Inep):
 
-- **Wizard passo a passo**: navegacao intuitiva em etapas
-- **Calculo automatico**: formula exata da planilha original
-- **Resultado detalhado**: visualizacao de cada componente do BDE
-- **Explicacoes interativas**: clique nos cards do resultado para entender cada metrica
-- **Contato integrado**: WhatsApp para suporte
+  | Etapa | LP Sinf–Ssup | MT Sinf–Ssup |
+  | --- | --- | --- |
+  | Anos Iniciais (1º ao 5º ano) | 49–324 | 60–322 |
+  | Anos Finais (6º ao 9º ano) | 100–400 | 100–400 |
+  | Ensino Médio (1ª à 4ª série) | 117–451 | 111–467 |
 
-## Como executar
+- **Resultado com uma casa decimal.**
 
-```bash
-cd "D:\exemplo\mudar-caminho"
-python -m uvicorn main:app --reload
-```
+Única diferença de propósito para a planilha: com N × P = 0 a planilha deixa a
+célula em branco; o simulador mostra 0,0.
 
-Acesse: http://127.0.0.1:8000
+## Arquivos
 
-## Publicacao (Google Sites / GitHub Pages)
+- `motor.js` — o cálculo, sem DOM
+- `wizard.js` — navegação e telas
+- `estilo.css` — cópia do estilo do Simulador BDE + o que só o IDEB usa
+- `img/logo-ngr.png`
+- `tests/test_ideb.py` — confere o motor contra valores calculados pela
+  própria planilha (`python3 tests/test_ideb.py`, precisa do Node)
 
-O `index.html` na raiz e a mesma interface sem servidor: os tres arquivos de
-`app/` reunidos, com o calculo em JavaScript no lugar da chamada a API. E o que
-o GitHub Pages serve em https://monkius-maximus.github.io/bdengroutubro/ e o
-que o Google Sites embute.
-
-Mexeu em `app/`? Regenere e rode os testes:
-
-```bash
-python3 tools/gerar_index.py
-python3 tests/test_paridade.py
-python3 tests/test_cenarios.py
-```
-
-A regra do BDE vive em dois lugares — `src/bde/service.py` e
-`app/static/js/motor.js`. Mudou num, mude no outro: `test_paridade.py` compara
-os dois campo a campo e `test_cenarios.py` confere a tabela da regra.
-Passo a passo em [`docs/GOOGLE_SITES.md`](docs/GOOGLE_SITES.md).
-
-## Stack
-
-- **Backend**: FastAPI + Python
-- **Frontend**: HTML + CSS + JavaScript vanilla
-- **Templates**: Jinja2
-
-## Simulador IDEB (`ideb/`)
-
-Segunda aplicação sobre o mesmo front-end: reaproveita o `estilo.css`, o logo,
-o rodapé, os popups e o fluxo do wizard do BDE. Porta a aba "Simulador Ideb"
-da planilha do Núcleo da Seplag: IDEB = N × P por etapa, com P a média
-harmônica das aprovações e N a média de LP e MT padronizadas pelos limites do
-SAEB 1997. Estática, sem backend: https://monkius-maximus.github.io/bdengroutubro/ideb/
-
-- `ideb/motor.js` — o cálculo, sem DOM
-- `ideb/wizard.js` — navegação e telas
-- `ideb/ideb.css` — só o que o `estilo.css` do BDE não tem
-
-`tests/test_ideb.py` confere o motor contra valores calculados pela própria
-planilha. Para levar a outro repositório, copie `ideb/`, `app/static/css/estilo.css`
-e `app/static/img/logo-ngr.png` e ajuste os caminhos `../app/static/`.
+Para ver localmente: `python3 -m http.server` nesta pasta e abra
+http://127.0.0.1:8000.
