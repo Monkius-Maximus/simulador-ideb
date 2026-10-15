@@ -207,20 +207,25 @@ function teclaNaOpcao(e, card) {
     toggleEtapa(card);
 }
 
+/* Casas decimais aceitas em cada campo. */
+const CASAS_APROVACAO = 2;
+const CASAS_PROFICIENCIA = 4;
+const CASAS_POR_EXTENSO = { 2: 'duas', 4: 'quatro' };
+
 /**
- * Le um campo numerico com ate duas casas decimais. Devolve { valor } ou
+ * Le um campo numerico com ate `casas` casas decimais. Devolve { valor } ou
  * { msg } com o motivo da recusa.
  *
  * O campo e de texto, e quem le o numero e o simulador: o campo numerico do
  * navegador trata a virgula de um jeito em cada navegador, e ha navegador que
  * a apaga ("9,5" virava 95). Aceita virgula ou ponto como separador decimal.
  */
-function lerNumero(input, nomeCampo, min, max) {
+function lerNumero(input, nomeCampo, min, max, casas) {
     const texto = input.value.trim();
     if (texto === '') return { msg: `Preencha o campo ${nomeCampo}.` };
     const valor = Number(texto.replace(',', '.'));
-    if (!/^\d+([.,]\d{1,2})?$/.test(texto) || valor < min || valor > max) {
-        return { msg: `${nomeCampo}: informe um valor de ${formatar(min, 2)} a ${formatar(max, 2)}, com até duas casas decimais.` };
+    if (!new RegExp(`^\\d+([.,]\\d{1,${casas}})?$`).test(texto) || valor < min || valor > max) {
+        return { msg: `${nomeCampo}: informe um valor de ${formatar(min, 2)} a ${formatar(max, 2)}, com até ${CASAS_POR_EXTENSO[casas]} casas decimais.` };
     }
     return { valor };
 }
@@ -244,7 +249,7 @@ function lerEtapa(chave) {
             aprovacoes.push(null);
             return;
         }
-        const taxa = lerNumero(input, `Aprovação (${ano}) ${de}`, APROVACAO_MIN, APROVACAO_MAX);
+        const taxa = lerNumero(input, `Aprovação (${ano}) ${de}`, APROVACAO_MIN, APROVACAO_MAX, CASAS_APROVACAO);
         if (taxa.msg) erros.push({ alvo: input, msg: taxa.msg });
         aprovacoes.push(taxa.valor);
     });
@@ -253,9 +258,9 @@ function lerEtapa(chave) {
     }
 
     const limites = LIMITES_SAEB[chave];
-    const lp = lerNumero(campo('lp'), `Proficiência em Língua Portuguesa ${de}`, limites.lp.inf, limites.lp.sup);
+    const lp = lerNumero(campo('lp'), `Proficiência em Língua Portuguesa ${de}`, limites.lp.inf, limites.lp.sup, CASAS_PROFICIENCIA);
     if (lp.msg) erros.push({ alvo: campo('lp'), msg: lp.msg });
-    const mt = lerNumero(campo('mt'), `Proficiência em Matemática ${de}`, limites.mt.inf, limites.mt.sup);
+    const mt = lerNumero(campo('mt'), `Proficiência em Matemática ${de}`, limites.mt.inf, limites.mt.sup, CASAS_PROFICIENCIA);
     if (mt.msg) erros.push({ alvo: campo('mt'), msg: mt.msg });
 
     if (erros.length > 0) return { dados: null, erros };
@@ -303,6 +308,11 @@ function formatar(valor, casas) {
     return arredondar(valor, casas).toFixed(casas).replace('.', ',');
 }
 
+/* Proficiencia como foi digitada: de duas a quatro casas. */
+function descreverProficiencia(valor) {
+    return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: CASAS_PROFICIENCIA });
+}
+
 function montarResumo() {
     let html = '<h2 class="resumo-titulo">Resumo das Informações</h2>'
         + '<p class="pergunta-instrucao">Confira os dados antes de ver o resultado. Para corrigir algo, use Voltar.</p>';
@@ -317,7 +327,7 @@ function montarResumo() {
                 <strong class="etapa-nome etapa-${chave}">${NOME_ETAPA[chave]}</strong>
                 <ul>
                     <li>Aprovação — ${aprovacoes}</li>
-                    <li>SAEB — Língua Portuguesa: ${formatar(dados.lp, 2)} · Matemática: ${formatar(dados.mt, 2)}</li>
+                    <li>SAEB — <span class="disc disc-lp" title="Língua Portuguesa">LP</span>${descreverProficiencia(dados.lp)} · <span class="disc disc-mt" title="Matemática">MAT</span>${descreverProficiencia(dados.mt)}</li>
                 </ul>
             </div>`;
     });
@@ -356,6 +366,13 @@ function mostrarResultado() {
                 </div>
                 <strong class="etapa-nome etapa-${chave}">${NOME_ETAPA[chave]}</strong>
                 <p class="selo-conta">Aprendizado (N) ${formatar(r.nota_saeb, 2)}<br>× Fluxo (P) ${formatar(r.rendimento, 2)}</p>
+                <div class="selo-notas">
+                    <span class="selo-notas-titulo">Notas padronizadas</span>
+                    <div class="selo-notas-colunas">
+                        <span class="selo-nota" aria-label="Língua Portuguesa: ${formatar(r.nota_lp, 2)}"><span class="disc disc-lp" title="Língua Portuguesa">LP</span><strong>${formatar(r.nota_lp, 2)}</strong></span>
+                        <span class="selo-nota" aria-label="Matemática: ${formatar(r.nota_mt, 2)}"><span class="disc disc-mt" title="Matemática">MAT</span><strong>${formatar(r.nota_mt, 2)}</strong></span>
+                    </div>
+                </div>
             </div>`;
     }).join('');
 

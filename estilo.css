@@ -33,6 +33,12 @@
     --etapa-ai: #7e22ce;
     --etapa-af: #155e75;
     --etapa-em: #78350f;
+
+    /* Uma cor por disciplina, usada so no selo "LP" e "MAT". Fora das cores
+       das etapas, do verde/vermelho de certo/errado e do azul-marinho da
+       marca. Texto branco com contraste acima de 6:1 nas duas. */
+    --disc-lp: #1d4ed8;
+    --disc-mt: #be185d;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -815,6 +821,25 @@ a.footer-btn { text-decoration: none; }
 .grade-aprovacoes.com-erro .input-campo input { border-color: var(--vermelho); }
 .grade-aprovacoes > .erro-campo { grid-column: 1 / -1; margin-top: 0; }
 
+/* Selo da disciplina: "LP" ou "MAT", sempre na cor reservada a ela */
+.disc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.7em;
+    padding: 1px 6px;
+    margin-right: 6px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    color: #fff;
+    vertical-align: 0.1em;
+}
+.disc-lp { background: var(--disc-lp); }
+.disc-mt { background: var(--disc-mt); }
+
 /* Resumo: uma caixa por etapa com o que foi digitado */
 .resumo-etapa {
     padding: 12px 14px;
@@ -835,7 +860,7 @@ a.footer-btn { text-decoration: none; }
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 12px 16px;
     width: 100%;
     margin-bottom: 12px;
 }
@@ -843,7 +868,7 @@ a.footer-btn { text-decoration: none; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 180px;
+    width: 190px;
     text-align: center;
 }
 .selo-etapa .resultado-badge {
@@ -858,4 +883,39 @@ a.footer-btn { text-decoration: none; }
     font-size: 0.85rem;
     color: #374151;
     line-height: 1.4;
+}
+
+/* Notas padronizadas de LP e MT, abaixo da conta N x P. N e a media delas. */
+.selo-notas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px 12px 12px;
+    border: 1px solid var(--cinza-claro);
+    border-radius: 10px;
+    background: var(--card);
+}
+.selo-notas-titulo {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--cinza);
+}
+.selo-notas-colunas {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+.selo-nota {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.selo-nota .disc { margin-right: 0; }
+.selo-nota strong {
+    font-size: 1.05rem;
+    color: #1f2937;
 }
