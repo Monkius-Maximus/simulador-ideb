@@ -26,19 +26,21 @@
     --raio: 12px;
     --overlay: rgba(15, 23, 42, 0.45);
 
-    /* Uma cor por etapa, usada so no nome da etapa, em todas as telas: roxo,
-       petroleo e castanho. Fora dos tons de vermelho e verde, que o sistema usa
-       para certo/errado e positivo/negativo; distintas entre si inclusive com
-       daltonismo; contraste >= 5,7:1 em todos os fundos onde aparecem. */
+    /* Vermelho e tons avermelhados (rosa, castanho, laranja) indicam
+       resultado ruim e verde indica resultado bom nos sistemas do NGR. Etapas
+       e disciplinas sao so identificacao, entao ficam fora dessas faixas. */
+
+    /* Uma cor por etapa, usada no nome da etapa e no selo do IDEB: roxo,
+       petroleo e indigo. Contraste >= 6,6:1 em todos os fundos onde aparecem. */
     --etapa-ai: #7e22ce;
     --etapa-af: #155e75;
-    --etapa-em: #78350f;
+    --etapa-em: #3730a3;
 
-    /* Uma cor por disciplina, usada so no selo "LP" e "MAT". Fora das cores
-       das etapas, do verde/vermelho de certo/errado e do azul-marinho da
-       marca. Texto branco com contraste acima de 6:1 nas duas. */
+    /* Uma cor por disciplina, usada so no selo "LP" e "MAT": azul e ardosia.
+       Distintas entre si tambem com daltonismo. Texto branco com contraste
+       acima de 6:1 nas duas. */
     --disc-lp: #1d4ed8;
-    --disc-mt: #be185d;
+    --disc-mt: #475569;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
