@@ -255,6 +255,9 @@ function lerEtapa(chave) {
     });
     if (aprovacoes.every((taxa) => taxa === null)) {
         erros.push({ alvo: document.getElementById(`grade-${chave}-ap`), msg: `Informe a taxa de aprovação de ao menos um ano ${de}.` });
+    } else if (aprovacoes.every((taxa) => taxa === null || taxa === 0)) {
+        // So zeros: a planilha nao tem fluxo (1/0) e deixa o IDEB em branco.
+        erros.push({ alvo: document.getElementById(`grade-${chave}-ap`), msg: `Informe ao menos uma taxa de aprovação ${de} maior que zero.` });
     }
 
     const limites = LIMITES_SAEB[chave];

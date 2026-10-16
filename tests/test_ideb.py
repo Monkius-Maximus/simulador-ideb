@@ -41,6 +41,13 @@ CASOS = [
      0.781213365803825, 4.57166666666667, 3.57144710399982),
     ("EM tres series", "em", [85, 88, 92], 270, 268,
      0.882407249102411, 4.49547534145193, 3.96684002945832),
+    # Taxa zero: conta no COUNT mas nao na soma, e aumenta P.
+    ("EM com a 4a serie zerada", "em", [100, 90, 50, 0], 423, 123,
+     0.972972972972973, 4.74937764919599, 4.62101609110961),
+    ("AI com o 1o ano zerado", "ai", [0, 95, 90, 88], 200, 210,
+     1.21208215867902, 5.60804996530187, 6.79741730792288),
+    ("AF com dois anos zerados", "af", [0, 0, 80], 260, 255,
+     2.4, 5.25, 12.6),
 ]
 
 
@@ -78,13 +85,13 @@ def main() -> int:
         if r["ideb"] != arredondar_excel(ideb, 1):
             falhas.append(f"{nome}: IDEB {r['ideb']} != planilha {arredondar_excel(ideb, 1)}")
 
-    # Taxa zero: P vai a zero (1/0 = infinito), nao a erro.
+    # So zeros: a planilha nao tem P (1/0) e deixa o IDEB em branco; o motor recusa.
     zero = subprocess.run(
-        ["node", "-e", f"{MOTOR.read_text('utf-8')}\nprocess.stdout.write(String(calcularRendimento([0, 90])));"],
+        ["node", "-e", f"{MOTOR.read_text('utf-8')}\ncalcularRendimento([0, 0]);"],
         capture_output=True, text=True,
     )
-    if zero.stdout != "0":
-        falhas.append(f"taxa zero: P devia ser 0, veio {zero.stdout or zero.stderr}")
+    if zero.returncode == 0:
+        falhas.append("so zeros: o motor devia recusar")
 
     for f in falhas:
         print("FALHA", f)

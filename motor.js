@@ -3,9 +3,11 @@
 
    IDEB = N x P, calculado por etapa. Nao existe IDEB unico da escola.
 
-     P   rendimento: media harmonica das taxas de aprovacao dos anos da
-         etapa que a escola tem. F7 = media de 1/taxa, G7 = inverso.
-         Ano em branco fica fora da media (COUNT so conta o preenchido).
+     P   rendimento: como a F7/G7 da planilha. F7 soma IFERROR(1/taxa; 0)
+         dos anos preenchidos e divide pelo COUNT deles; G7 e o inverso.
+         Ano em branco fica fora (COUNT so conta o preenchido). Taxa zero
+         nao soma nada (1/0 vira 0) mas conta no COUNT, entao aumenta P,
+         que pode passar de 1 e levar o IDEB acima de 10.
      N   aprendizado: media das notas padronizadas de LP e MT no SAEB,
          nota = (proficiencia - limite inferior) / (superior - inferior) x 10,
          com os limites do SAEB 1997 (Inep).
@@ -40,13 +42,14 @@ function arredondar(valor, casas) {
 
 /**
  * P. Recebe as taxas em percentual (0 a 100), so dos anos preenchidos.
- * Uma taxa zero leva P a zero: 1/0 e Infinity, o inverso da media tambem.
+ * Taxa zero conta no divisor mas nao na soma, como o IFERROR(1/taxa; 0) da
+ * planilha. So com zeros a planilha nao tem P (1/0) e deixa o IDEB em branco.
  */
 function calcularRendimento(aprovacoes) {
-    if (aprovacoes.length === 0) {
-        throw new Error('Informe ao menos uma taxa de aprovação da etapa.');
+    if (!aprovacoes.some(function (taxa) { return taxa > 0; })) {
+        throw new Error('Informe ao menos uma taxa de aprovação maior que zero.');
     }
-    var somaInversos = aprovacoes.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
+    var somaInversos = aprovacoes.reduce(function (s, taxa) { return taxa === 0 ? s : s + 100 / taxa; }, 0);
     return aprovacoes.length / somaInversos;
 }
 
