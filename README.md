@@ -13,7 +13,8 @@ dela (não a pasta) vai para a raiz do repositório, e o GitHub Pages serve o
 IDEB = N × P, por etapa (não existe IDEB único da escola).
 
 - **P (fluxo):** média harmônica das taxas de aprovação dos anos da etapa.
-  Ano que a escola não tem fica em branco e fora da média.
+  Ano que a escola não tem fica em branco e fora da média. Taxa zero (ninguém
+  aprovado) entra na média e leva P, e o IDEB da etapa, a zero.
 - **N (aprendizado):** média das notas de LP e MT no SAEB, cada uma
   padronizada por (proficiência − Sinf) ÷ (Ssup − Sinf) × 10, com os limites
   do SAEB 1997 (Inep):
@@ -26,8 +27,14 @@ IDEB = N × P, por etapa (não existe IDEB único da escola).
 
 - **Resultado com uma casa decimal.**
 
-Única diferença de propósito para a planilha: com N × P = 0 a planilha deixa a
-célula em branco; o simulador mostra 0,0.
+Diferenças de propósito para a planilha:
+
+- **Taxa de aprovação zero.** A planilha soma `IFERROR(1/taxa; 0)` e divide
+  pelo `COUNT` dos anos preenchidos: o zero não soma nada mas conta no
+  divisor, e com isso *aumenta* P (pode passar de 1 e levar o IDEB acima
+  de 10). O simulador segue o Inep: o zero entra na média harmônica e leva P
+  a zero. A tela avisa disso ao lado das aprovações.
+- **N × P = 0.** A planilha deixa a célula em branco; o simulador mostra 0,0.
 
 ## Arquivos
 
