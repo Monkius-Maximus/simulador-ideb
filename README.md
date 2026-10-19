@@ -12,9 +12,9 @@ dela (não a pasta) vai para a raiz do repositório, e o GitHub Pages serve o
 
 IDEB = N × P, por etapa (não existe IDEB único da escola).
 
-- **P (fluxo):** média harmônica das taxas de aprovação dos anos da etapa.
-  Ano que a escola não tem fica em branco e fora da média. Taxa zero (ninguém
-  aprovado) entra na média e leva P, e o IDEB da etapa, a zero.
+- **P (fluxo):** média simples das taxas de aprovação dos anos da etapa, de
+  0 a 1. Ano que a escola não tem fica em branco e fora da média. Taxa zero
+  (ninguém aprovado) entra na média e reduz P: 0, 0, 0 e 100 dão P = 0,25.
 - **N (aprendizado):** média das notas de LP e MT no SAEB, cada uma
   padronizada por (proficiência − Sinf) ÷ (Ssup − Sinf) × 10, com os limites
   do SAEB 1997 (Inep):
@@ -27,13 +27,15 @@ IDEB = N × P, por etapa (não existe IDEB único da escola).
 
 - **Resultado com uma casa decimal.**
 
-Diferenças de propósito para a planilha:
+Diferenças de propósito:
 
-- **Taxa de aprovação zero.** A planilha soma `IFERROR(1/taxa; 0)` e divide
-  pelo `COUNT` dos anos preenchidos: o zero não soma nada mas conta no
-  divisor, e com isso *aumenta* P (pode passar de 1 e levar o IDEB acima
-  de 10). O simulador segue o Inep: o zero entra na média harmônica e leva P
-  a zero. A tela avisa disso ao lado das aprovações.
+- **Fluxo pela média simples.** O Inep usa a média harmônica das aprovações,
+  em que um único ano com aprovação zero leva P, e o IDEB, a zero. A planilha
+  de referência soma `IFERROR(1/taxa; 0)` e divide pelo `COUNT`, o que faz o
+  zero *aumentar* P. O simulador usa a média simples, por decisão do NGR: o
+  zero pesa, mas não zera a etapa. Com aprovações sem zero e parecidas entre
+  si, as duas médias ficam próximas; com aprovações muito diferentes, a média
+  simples dá um P maior que a do Inep.
 - **N × P = 0.** A planilha deixa a célula em branco; o simulador mostra 0,0.
 
 ## Arquivos
@@ -42,8 +44,8 @@ Diferenças de propósito para a planilha:
 - `wizard.js` — navegação e telas
 - `estilo.css` — cópia do estilo do Simulador BDE + o que só o IDEB usa
 - `img/logo-ngr.png`
-- `tests/test_ideb.py` — confere o motor contra valores calculados pela
-  própria planilha (`python3 tests/test_ideb.py`, precisa do Node)
+- `tests/test_ideb.py` — confere N contra a própria planilha e P e o IDEB
+  contra a média simples (`python3 tests/test_ideb.py`, precisa do Node)
 
 Para ver localmente: `python3 -m http.server` nesta pasta e abra
 http://127.0.0.1:8000.

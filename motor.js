@@ -1,11 +1,13 @@
 /* ============================================================================
-   Motor IDEB — porte da aba "Simulador Ideb" da planilha do Núcleo da Seplag.
+   Motor IDEB — simulador do Núcleo da Seplag.
 
    IDEB = N x P, calculado por etapa. Nao existe IDEB unico da escola.
 
-     P   rendimento: media harmonica das taxas de aprovacao dos anos da
-         etapa que a escola tem. F7 = media de 1/taxa, G7 = inverso.
-         Ano em branco fica fora da media (COUNT so conta o preenchido).
+     P   rendimento: media simples das taxas de aprovacao dos anos da
+         etapa que a escola tem, de 0 a 1. Ano em branco fica fora da
+         media; taxa zero (ninguem aprovado) entra e puxa P para baixo.
+         Decisao do NGR: o Inep usa a media harmonica, em que um unico
+         zero leva P a zero.
      N   aprendizado: media das notas padronizadas de LP e MT no SAEB,
          nota = (proficiencia - limite inferior) / (superior - inferior) x 10,
          com os limites do SAEB 1997 (Inep).
@@ -39,15 +41,15 @@ function arredondar(valor, casas) {
 }
 
 /**
- * P. Recebe as taxas em percentual (0 a 100), so dos anos preenchidos.
- * Uma taxa zero leva P a zero: 1/0 e Infinity, o inverso da media tambem.
+ * P. Recebe as taxas em percentual (0 a 100), so dos anos preenchidos, e
+ * devolve a media simples delas de 0 a 1.
  */
 function calcularRendimento(aprovacoes) {
     if (aprovacoes.length === 0) {
         throw new Error('Informe ao menos uma taxa de aprovação da etapa.');
     }
-    var somaInversos = aprovacoes.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
-    return aprovacoes.length / somaInversos;
+    var soma = aprovacoes.reduce(function (s, taxa) { return s + taxa; }, 0);
+    return soma / aprovacoes.length / 100;
 }
 
 function padronizar(proficiencia, limite) {
