@@ -6,8 +6,12 @@ Os valores esperados sao os que a propria planilha calculou: os casos foram
 digitados nas celulas amarelas e a planilha recalculada no LibreOffice. P e N
 batem ate a 9a casa; o IDEB, com uma casa, como a celula C14 exibe.
 
-Unica diferenca de proposito: com N x P = 0 a planilha deixa o IDEB em branco
-(o AND da C14 trata zero como falso). O motor devolve 0,0.
+Diferencas de proposito:
+- taxa de aprovacao zero: a planilha soma IFERROR(1/taxa; 0) e divide pelo
+  COUNT, entao o zero aumenta P. O motor segue o Inep: o zero entra na media
+  harmonica e leva P, e o IDEB, a zero;
+- com N x P = 0 a planilha deixa o IDEB em branco (o AND da C14 trata zero
+  como falso). O motor devolve 0,0.
 
     python3 tests/test_ideb.py
 """
@@ -78,13 +82,15 @@ def main() -> int:
         if r["ideb"] != arredondar_excel(ideb, 1):
             falhas.append(f"{nome}: IDEB {r['ideb']} != planilha {arredondar_excel(ideb, 1)}")
 
-    # Taxa zero: P vai a zero (1/0 = infinito), nao a erro.
+    # Taxa zero: P vai a zero (1/0 = infinito), nao a erro. Caso do EM com a
+    # 4a serie zerada, em que a planilha da 4,6 (P 0,97) e o Inep da 0.
     zero = subprocess.run(
-        ["node", "-e", f"{MOTOR.read_text('utf-8')}\nprocess.stdout.write(String(calcularRendimento([0, 90])));"],
+        ["node", "-e", f"{MOTOR.read_text('utf-8')}\nconst r = calcularIdeb('em', {{aprovacoes: [100, 90, 50, 0], lp: 423, mt: 123}});"
+         "\nprocess.stdout.write(`${r.rendimento} ${r.ideb}`);"],
         capture_output=True, text=True,
     )
-    if zero.stdout != "0":
-        falhas.append(f"taxa zero: P devia ser 0, veio {zero.stdout or zero.stderr}")
+    if zero.stdout != "0 0":
+        falhas.append(f"taxa zero: P e IDEB deviam ser 0, veio {zero.stdout or zero.stderr}")
 
     for f in falhas:
         print("FALHA", f)
