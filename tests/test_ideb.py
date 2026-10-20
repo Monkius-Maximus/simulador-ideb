@@ -8,8 +8,10 @@ batem ate a 9a casa; o IDEB, com uma casa, como a celula C14 exibe.
 
 Diferencas de proposito:
 - taxa de aprovacao zero: a planilha soma IFERROR(1/taxa; 0) e divide pelo
-  COUNT, entao o zero aumenta P. O motor segue o Inep: o zero entra na media
-  harmonica e leva P, e o IDEB, a zero;
+  COUNT, entao o zero aumenta P (pode passar de 1). O motor conta o zero como
+  serie sem aprovados: P = media harmonica das taxas acima de zero x (series
+  com aprovados / series preenchidas). Nesses casos o esperado e calculado a
+  parte, em Decimal;
 - com N x P = 0 a planilha deixa o IDEB em branco (o AND da C14 trata zero
   como falso). O motor devolve 0,0.
 
@@ -52,6 +54,15 @@ CASOS = [
      0.842105263157895, 10.0, 8.42105263157895),
     ("AF 100/90/40/30 no teto", "af", [100, 90, 40, 30], 400, 400,
      0.503496503496503, 10.0, 5.03496503496503),
+    # Taxa zero: serie sem aprovados, reduz P sem zerar (planilha daria P > 1).
+    ("EM 100/90/80/0, LP 300, MT 300", "em", [100, 90, 80, 0], 300, 300,
+     0.6694214876033058, 5.3940153401063045, 3.610869773129014),
+    ("EM 100/90/50/0", "em", [100, 90, 50, 0], 423, 123,
+     0.5472972972972973, 4.74937764919599, 2.5993215512491568),
+    ("EM 0/0/0/100 no teto", "em", [0, 0, 0, 100], 451, 467,
+     0.25, 10.0, 2.5),
+    ("AF so zeros", "af", [0, 0], 260, 255,
+     0.0, 5.25, 0.0),
 ]
 
 
@@ -119,27 +130,17 @@ def main() -> int:
     for caso, r in zip(CASOS, respostas_js()):
         nome, *_, p, n, ideb = caso
         if abs(r["rendimento"] - p) > 1e-9:
-            falhas.append(f"{nome}: P {r['rendimento']} != planilha {p}")
+            falhas.append(f"{nome}: P {r['rendimento']} != esperado {p}")
         if abs(r["nota_saeb"] - n) > 1e-9:
-            falhas.append(f"{nome}: N {r['nota_saeb']} != planilha {n}")
+            falhas.append(f"{nome}: N {r['nota_saeb']} != esperado {n}")
         if r["ideb"] != arredondar_excel(ideb, 1):
-            falhas.append(f"{nome}: IDEB {r['ideb']} != planilha {arredondar_excel(ideb, 1)}")
-
-    # Taxa zero: P vai a zero (1/0 = infinito), nao a erro. Caso do EM com a
-    # 4a serie zerada, em que a planilha da 4,6 (P 0,97) e o Inep da 0.
-    zero = subprocess.run(
-        ["node", "-e", f"{MOTOR.read_text('utf-8')}\nconst r = calcularIdeb('em', {{aprovacoes: [100, 90, 50, 0], lp: 423, mt: 123}});"
-         "\nprocess.stdout.write(`${r.rendimento} ${r.ideb}`);"],
-        capture_output=True, text=True,
-    )
-    if zero.stdout != "0 0":
-        falhas.append(f"taxa zero: P e IDEB deviam ser 0, veio {zero.stdout or zero.stderr}")
+            falhas.append(f"{nome}: IDEB {r['ideb']} != esperado {arredondar_excel(ideb, 1)}")
 
     falhas += conferir_limites()
 
     for f in falhas:
         print("FALHA", f)
-    print(f"{len(CASOS) + 2 - len(falhas)}/{len(CASOS) + 2} casos ok")
+    print(f"{len(CASOS) + 1 - len(falhas)}/{len(CASOS) + 1} casos ok")
     return 1 if falhas else 0
 
 

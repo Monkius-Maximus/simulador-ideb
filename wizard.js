@@ -15,6 +15,7 @@ const PASSO_DA_ETAPA = { ai: 1, af: 2, em: 3 };
 const ETAPAS = ['ai', 'af', 'em'];
 
 const NOME_ETAPA = { ai: 'Anos Iniciais', af: 'Anos Finais', em: 'Ensino Médio' };
+const SIGLA_ETAPA = { ai: 'AI', af: 'AF', em: 'EM' };
 /* Nomes das etapas como aparecem nas mensagens: "dos Anos Iniciais". */
 const ETAPA_NAS_MENSAGENS = { ai: 'dos Anos Iniciais', af: 'dos Anos Finais', em: 'do Ensino Médio' };
 
@@ -350,7 +351,7 @@ function mostrarResumo() {
 }
 
 const MENSAGEM_RESULTADO =
-    'O IDEB vai de 0 a 10 e é o produto do aprendizado (N), medido pelas notas do SAEB, pelo rendimento (P), medido pelas taxas de aprovação. Para subir o IDEB, as duas partes contam: estudantes aprendendo mais e sendo aprovados na idade certa.';
+    'O IDEB vai de 0 a 10 e é o produto da nota SAEB (N), medida pelas proficiências de Língua Portuguesa e Matemática, pelo rendimento (P), medido pelas taxas de aprovação. Para subir o IDEB, as duas partes contam: estudantes aprendendo mais e sendo aprovados na idade certa.';
 
 function mostrarResultado() {
     estado.stepAtual = PASSO_RESULTADO;
@@ -365,7 +366,7 @@ function mostrarResultado() {
                     <span class="label-pct">IDEB</span>
                 </div>
                 <strong class="etapa-nome etapa-${chave}">${NOME_ETAPA[chave]}</strong>
-                <p class="selo-conta">Aprendizado (N) ${formatar(r.nota_saeb, 2)}<br>× Rendimento (P) ${formatar(r.rendimento, 2)}</p>
+                <p class="selo-conta">Nota SAEB ${SIGLA_ETAPA[chave]} (N) ${formatar(r.nota_saeb, 2)}<br>× Rendimento (P) ${formatar(r.rendimento, 2)}</p>
                 <div class="selo-notas">
                     <span class="selo-notas-titulo">Notas padronizadas</span>
                     <div class="selo-notas-colunas">

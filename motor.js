@@ -5,8 +5,10 @@
 
      P   rendimento, de 0 a 1: media harmonica das taxas de aprovacao dos
          anos da etapa que a escola tem (metodologia do Inep). Ano em branco
-         fica fora da media; taxa zero (ninguem aprovado) leva P a zero.
-     N   aprendizado, de 0 a 10: media das notas padronizadas de LP e MT no
+         (a escola nao tem a serie) fica fora. Ano com taxa zero (ninguem
+         aprovado) entra na contagem como serie sem aprovados e reduz P na
+         proporcao dela, sem zerar a etapa (decisao do NGR).
+     N   nota SAEB da etapa, de 0 a 10: media das notas padronizadas de LP e MT no
          SAEB, nota = (proficiencia - limite inferior) / (superior - inferior)
          x 10, com os limites do SAEB 1997 (Inep), diferentes por etapa.
      IDEB  N x P, de 0 a 10, divulgado com uma casa decimal.
@@ -44,7 +46,9 @@ function arredondar(valor, casas) {
 
 /**
  * P, de 0 a 1. Recebe as taxas em percentual (0 a 100), so dos anos
- * preenchidos, e devolve a media harmonica delas. Uma taxa zero leva P a zero.
+ * preenchidos. Sem zero, e a media harmonica delas. Cada taxa zero entra na
+ * contagem como serie sem aprovados: P = media harmonica das taxas acima de
+ * zero x (series com aprovados / series preenchidas). So zeros: P = 0.
  */
 function calcularRendimento(aprovacoes) {
     if (aprovacoes.length === 0) {
@@ -55,9 +59,11 @@ function calcularRendimento(aprovacoes) {
             throw new Error('Taxa de aprovação fora de 0 a 100: ' + taxa);
         }
     });
-    if (aprovacoes.indexOf(0) !== -1) return 0;
-    var somaInversos = aprovacoes.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
-    return aprovacoes.length / somaInversos;
+    var comAprovados = aprovacoes.filter(function (taxa) { return taxa > 0; });
+    if (comAprovados.length === 0) return 0;
+    var somaInversos = comAprovados.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
+    var mediaHarmonica = comAprovados.length / somaInversos;
+    return mediaHarmonica * comAprovados.length / aprovacoes.length;
 }
 
 /** Nota de 0 a 10. A proficiencia precisa estar dentro dos limites da etapa. */

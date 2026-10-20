@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="img/logo-ngr.png">
     <!-- O ?v= obriga o navegador a buscar o CSS e o JS novos quando o HTML
          muda. Mexeu em estilo.css, motor.js ou wizard.js? Troque o numero. -->
-    <link rel="stylesheet" href="estilo.css?v=20261020c">
+    <link rel="stylesheet" href="estilo.css?v=20261020d">
 </head>
 <body>
 
@@ -60,7 +60,7 @@
                 <h2 class="pergunta-titulo">Informe os dados dos <span class="etapa-nome etapa-ai">Anos Iniciais</span></h2>
 
                 <h3 class="secao-titulo">Fluxo: taxas de aprovação</h3>
-                <p class="dica-secao" id="dica-ai-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong> Zero quer dizer que nenhum aluno do ano foi aprovado: entra no cálculo e zera o rendimento (P) e o IDEB da etapa.</p>
+                <p class="dica-secao" id="dica-ai-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong> Zero quer dizer que nenhum aluno do ano foi aprovado: entra na conta e reduz o rendimento (P), sem zerar a etapa.</p>
                 <div class="grade-aprovacoes" id="grade-ai-ap">
                     <div class="input-campo"><label for="inp-ai-ap-1">1º ano</label><input type="text" id="inp-ai-ap-1" inputmode="decimal" placeholder="Ex: 95,50" aria-describedby="dica-ai-ap"></div>
                     <div class="input-campo"><label for="inp-ai-ap-2">2º ano</label><input type="text" id="inp-ai-ap-2" inputmode="decimal" placeholder="Ex: 95,50" aria-describedby="dica-ai-ap"></div>
@@ -89,7 +89,7 @@
                 <h2 class="pergunta-titulo">Informe os dados dos <span class="etapa-nome etapa-af">Anos Finais</span></h2>
 
                 <h3 class="secao-titulo">Fluxo: taxas de aprovação</h3>
-                <p class="dica-secao" id="dica-af-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong> Zero quer dizer que nenhum aluno do ano foi aprovado: entra no cálculo e zera o rendimento (P) e o IDEB da etapa.</p>
+                <p class="dica-secao" id="dica-af-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong> Zero quer dizer que nenhum aluno do ano foi aprovado: entra na conta e reduz o rendimento (P), sem zerar a etapa.</p>
                 <div class="grade-aprovacoes" id="grade-af-ap">
                     <div class="input-campo"><label for="inp-af-ap-1">6º ano</label><input type="text" id="inp-af-ap-1" inputmode="decimal" placeholder="Ex: 90,00" aria-describedby="dica-af-ap"></div>
                     <div class="input-campo"><label for="inp-af-ap-2">7º ano</label><input type="text" id="inp-af-ap-2" inputmode="decimal" placeholder="Ex: 90,00" aria-describedby="dica-af-ap"></div>
@@ -117,7 +117,7 @@
                 <h2 class="pergunta-titulo">Informe os dados do <span class="etapa-nome etapa-em">Ensino Médio</span></h2>
 
                 <h3 class="secao-titulo">Fluxo: taxas de aprovação</h3>
-                <p class="dica-secao" id="dica-em-ap">Taxa de aprovação de cada série, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem a série, deixe em branco</strong> (a 4ª série só existe no ensino médio integrado). Zero quer dizer que nenhum aluno da série foi aprovado: entra no cálculo e zera o rendimento (P) e o IDEB da etapa.</p>
+                <p class="dica-secao" id="dica-em-ap">Taxa de aprovação de cada série, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem a série, deixe em branco</strong> (a 4ª série só existe no ensino médio integrado). Zero quer dizer que nenhum aluno da série foi aprovado: entra na conta e reduz o rendimento (P), sem zerar a etapa.</p>
                 <div class="grade-aprovacoes" id="grade-em-ap">
                     <div class="input-campo"><label for="inp-em-ap-1">1ª série</label><input type="text" id="inp-em-ap-1" inputmode="decimal" placeholder="Ex: 85,00" aria-describedby="dica-em-ap"></div>
                     <div class="input-campo"><label for="inp-em-ap-2">2ª série</label><input type="text" id="inp-em-ap-2" inputmode="decimal" placeholder="Ex: 85,00" aria-describedby="dica-em-ap"></div>
@@ -224,10 +224,10 @@
                 <ol class="popup-lista">
                     <li>Este simulador foi desenvolvido pelo Núcleo da Seplag para esclarecer como é calculado o IDEB da escola. Os resultados apresentados não são oficiais: o IDEB oficial é divulgado pelo Inep/MEC.</li>
                     <li>O IDEB é calculado separadamente para cada etapa (Anos Iniciais, Anos Finais e Ensino Médio). Não existe um IDEB único da escola.</li>
-                    <li><strong>IDEB = N × P.</strong> N é o aprendizado: a média das notas de Língua Portuguesa e Matemática no SAEB, convertidas para uma escala de 0 a 10. P é o rendimento: a média harmônica das taxas de aprovação dos anos da etapa, de 0 a 1. O IDEB, por consequência, também vai de 0 a 10.</li>
+                    <li><strong>IDEB = N × P.</strong> N é a nota SAEB da etapa: a média das notas de Língua Portuguesa e Matemática no SAEB, convertidas para uma escala de 0 a 10. P é o rendimento: a média harmônica das taxas de aprovação dos anos da etapa, de 0 a 1. O IDEB, por consequência, também vai de 0 a 10.</li>
                     <li>Cada nota é convertida pela fórmula (proficiência − limite inferior) ÷ (limite superior − limite inferior) × 10, com os limites fixados pelo Inep a partir do SAEB 1997.</li>
                     <li>Na média harmônica, uma taxa de aprovação baixa pesa mais do que uma alta: reprovar em um único ano derruba o fluxo da etapa inteira.</li>
-                    <li>Ano que a escola não oferece fica em branco e fora do cálculo. Taxa de aprovação zero quer dizer que ninguém foi aprovado naquele ano: entra na média harmônica e leva o rendimento (P), e com ele o IDEB da etapa, a zero.</li>
+                    <li>Ano que a escola não oferece fica em branco e fora do cálculo. Taxa de aprovação zero quer dizer que ninguém foi aprovado naquele ano: o ano entra na conta como série sem aprovados e reduz o rendimento (P) na proporção dele, sem zerar a etapa. Exemplo: 100%, 90%, 80% e 0% dão rendimento de 0,67; com o 0% em branco, 0,89.</li>
                     <li>O IDEB é divulgado com uma casa decimal. Pequenas diferenças podem ocorrer devido a arredondamentos.</li>
                 </ol>
             </div>
@@ -255,7 +255,7 @@
         </div>
     </div>
 
-    <script src="motor.js?v=20261020c"></script>
-    <script src="wizard.js?v=20261020c"></script>
+    <script src="motor.js?v=20261020d"></script>
+    <script src="wizard.js?v=20261020d"></script>
 </body>
 </html>
