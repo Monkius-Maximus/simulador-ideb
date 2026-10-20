@@ -1,17 +1,19 @@
 /* ============================================================================
-   Motor IDEB — simulador do Núcleo da Seplag.
+   Motor IDEB — porte da aba "Simulador Ideb" da planilha do Núcleo da Seplag.
 
    IDEB = N x P, calculado por etapa. Nao existe IDEB unico da escola.
 
-     P   rendimento: media simples das taxas de aprovacao dos anos da
-         etapa que a escola tem, de 0 a 1. Ano em branco fica fora da
-         media; taxa zero (ninguem aprovado) entra e puxa P para baixo.
-         Decisao do NGR: o Inep usa a media harmonica, em que um unico
-         zero leva P a zero.
-     N   aprendizado: media das notas padronizadas de LP e MT no SAEB,
-         nota = (proficiencia - limite inferior) / (superior - inferior) x 10,
-         com os limites do SAEB 1997 (Inep).
-     IDEB  N x P, divulgado com uma casa decimal.
+     P   rendimento, de 0 a 1: media harmonica das taxas de aprovacao dos
+         anos da etapa que a escola tem (metodologia do Inep). Ano em branco
+         fica fora da media; taxa zero (ninguem aprovado) leva P a zero.
+     N   aprendizado, de 0 a 10: media das notas padronizadas de LP e MT no
+         SAEB, nota = (proficiencia - limite inferior) / (superior - inferior)
+         x 10, com os limites do SAEB 1997 (Inep), diferentes por etapa.
+     IDEB  N x P, de 0 a 10, divulgado com uma casa decimal.
+
+   Os limites sao condicao de entrada: taxa fora de 0 a 100 ou proficiencia
+   fora dos limites da etapa param o calculo com erro. Assim P nunca passa de
+   1, nenhuma nota passa de 10 e o IDEB fica sempre entre 0 e 10.
 
    Diferenca para a planilha, de proposito: com N x P = 0 a C14 fica em
    branco, porque o AND(...; E11*G7) trata zero como falso. Aqui o IDEB e 0,0.
@@ -41,18 +43,28 @@ function arredondar(valor, casas) {
 }
 
 /**
- * P. Recebe as taxas em percentual (0 a 100), so dos anos preenchidos, e
- * devolve a media simples delas de 0 a 1.
+ * P, de 0 a 1. Recebe as taxas em percentual (0 a 100), so dos anos
+ * preenchidos, e devolve a media harmonica delas. Uma taxa zero leva P a zero.
  */
 function calcularRendimento(aprovacoes) {
     if (aprovacoes.length === 0) {
         throw new Error('Informe ao menos uma taxa de aprovação da etapa.');
     }
-    var soma = aprovacoes.reduce(function (s, taxa) { return s + taxa; }, 0);
-    return soma / aprovacoes.length / 100;
+    aprovacoes.forEach(function (taxa) {
+        if (!(taxa >= 0 && taxa <= 100)) {
+            throw new Error('Taxa de aprovação fora de 0 a 100: ' + taxa);
+        }
+    });
+    if (aprovacoes.indexOf(0) !== -1) return 0;
+    var somaInversos = aprovacoes.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
+    return aprovacoes.length / somaInversos;
 }
 
+/** Nota de 0 a 10. A proficiencia precisa estar dentro dos limites da etapa. */
 function padronizar(proficiencia, limite) {
+    if (!(proficiencia >= limite.inf && proficiencia <= limite.sup)) {
+        throw new Error('Proficiência fora dos limites do SAEB (' + limite.inf + ' a ' + limite.sup + '): ' + proficiencia);
+    }
     return ((proficiencia - limite.inf) / (limite.sup - limite.inf)) * 10;
 }
 

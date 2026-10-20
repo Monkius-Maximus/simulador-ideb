@@ -350,7 +350,7 @@ function mostrarResumo() {
 }
 
 const MENSAGEM_RESULTADO =
-    'O IDEB vai de 0 a 10 e é o produto do aprendizado (N), medido pelas notas do SAEB, pelo fluxo (P), medido pelas taxas de aprovação. Para subir o IDEB, as duas partes contam: estudantes aprendendo mais e sendo aprovados na idade certa.';
+    'O IDEB vai de 0 a 10 e é o produto do aprendizado (N), medido pelas notas do SAEB, pelo rendimento (P), medido pelas taxas de aprovação. Para subir o IDEB, as duas partes contam: estudantes aprendendo mais e sendo aprovados na idade certa.';
 
 function mostrarResultado() {
     estado.stepAtual = PASSO_RESULTADO;
@@ -365,7 +365,7 @@ function mostrarResultado() {
                     <span class="label-pct">IDEB</span>
                 </div>
                 <strong class="etapa-nome etapa-${chave}">${NOME_ETAPA[chave]}</strong>
-                <p class="selo-conta">Aprendizado (N) ${formatar(r.nota_saeb, 2)}<br>× Fluxo (P) ${formatar(r.rendimento, 2)}</p>
+                <p class="selo-conta">Aprendizado (N) ${formatar(r.nota_saeb, 2)}<br>× Rendimento (P) ${formatar(r.rendimento, 2)}</p>
                 <div class="selo-notas">
                     <span class="selo-notas-titulo">Notas padronizadas</span>
                     <div class="selo-notas-colunas">
