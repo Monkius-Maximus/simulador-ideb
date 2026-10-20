@@ -8,9 +8,7 @@
          fica fora da media; taxa zero (ninguem aprovado) leva P a zero.
      N   aprendizado, de 0 a 10: media das notas padronizadas de LP e MT no
          SAEB, nota = (proficiencia - limite inferior) / (superior - inferior)
-         x 10. Limites definidos pelo NGR: AI e AF com LP 49-324 e MT
-         60-322; EM com LP 117-451 e MT 111-467. Nos AF o Inep e a planilha
-         usam 100-400; aqui os AF seguem os limites dos AI, por decisao do NGR.
+         x 10, com os limites do SAEB 1997 (Inep), diferentes por etapa.
      IDEB  N x P, de 0 a 10, divulgado com uma casa decimal.
 
    Os limites sao condicao de entrada: taxa fora de 0 a 100 ou proficiencia
@@ -23,7 +21,7 @@
 
 var LIMITES_SAEB = {
     ai: { lp: { inf: 49, sup: 324 }, mt: { inf: 60, sup: 322 } },
-    af: { lp: { inf: 49, sup: 324 }, mt: { inf: 60, sup: 322 } },
+    af: { lp: { inf: 100, sup: 400 }, mt: { inf: 100, sup: 400 } },
     em: { lp: { inf: 117, sup: 451 }, mt: { inf: 111, sup: 467 } },
 };
 

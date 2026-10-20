@@ -12,9 +12,6 @@ Diferencas de proposito:
   harmonica e leva P, e o IDEB, a zero;
 - com N x P = 0 a planilha deixa o IDEB em branco (o AND da C14 trata zero
   como falso). O motor devolve 0,0.
-- limites dos Anos Finais: a planilha usa 100-400 nas duas disciplinas; o
-  motor usa os dos Anos Iniciais (LP 49-324, MT 60-322), por decisao do NGR.
-  Nos casos AF, P vem da planilha e N e o IDEB sao calculados a parte.
 
     python3 tests/test_ideb.py
 """
@@ -32,30 +29,28 @@ MOTOR = Path(__file__).resolve().parent.parent / "motor.js"
 CASOS = [
     ("AI cinco anos", "ai", [95, 92.5, 88, 90, 97.3], 210.5, 225.3,
      0.924396112552462, 6.09094378903539, 5.63044476035988),
-    # AF: P da planilha; N com os limites dos AI (decisao do NGR, a planilha
-    # usa 100-400), calculado a parte em Decimal.
     ("AF sem o 7o ano", "af", [85, 80.2, 91], 255, 250,
-     0.85172721531153, 7.37140874392783, 6.27842944238871),
+     0.85172721531153, 5.08333333333333, 4.32961334450028),
     ("EM com 4a serie", "em", [78, 82.5, 90, 100], 280, 275.6,
      0.868567572127552, 4.75191751328803, 4.12736145746698),
     ("AI no teto", "ai", [100, 100, 100, 100, 100], 324, 322,
      1.0, 10.0, 10.0),
-    ("AF no piso: planilha em branco, motor 0", "af", [70], 49, 60,
+    ("AF no piso: planilha em branco, motor 0", "af", [70], 100, 100,
      0.7, 0.0, 0.0),
     ("EM LP no teto, MT no piso", "em", [60.55], 451, 111,
      0.6055, 5.0, 3.0275),
     ("AI so o 5o ano", "ai", [99.9], 180.25, 200.75,
      0.999, 5.07243233865371, 5.06735990631506),
     ("AF quatro anos quebrados", "af", [65, 72.33, 88.88, 93.1], 240.4, 233.9,
-     0.781213365803825, 6.79870229007634, 5.31123709912871),
+     0.781213365803825, 4.57166666666667, 3.57144710399982),
     ("EM tres series", "em", [85, 88, 92], 270, 268,
      0.882407249102411, 4.49547534145193, 3.96684002945832),
     # Anos Finais das capturas da planilha (Rendimento F22, IDEB C29).
-    ("AF tudo 100 no teto", "af", [100, 100, 100, 100], 324, 322,
+    ("AF tudo 100 no teto", "af", [100, 100, 100, 100], 400, 400,
      1.0, 10.0, 10.0),
-    ("AF 100/80/80/80 no teto", "af", [100, 80, 80, 80], 324, 322,
+    ("AF 100/80/80/80 no teto", "af", [100, 80, 80, 80], 400, 400,
      0.842105263157895, 10.0, 8.42105263157895),
-    ("AF 100/90/40/30 no teto", "af", [100, 90, 40, 30], 324, 322,
+    ("AF 100/90/40/30 no teto", "af", [100, 90, 40, 30], 400, 400,
      0.503496503496503, 10.0, 5.03496503496503),
 ]
 
