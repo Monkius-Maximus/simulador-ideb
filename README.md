@@ -17,12 +17,12 @@ IDEB = N × P, por etapa (não existe IDEB único da escola).
   aprovado) entra na média e leva P, e o IDEB da etapa, a zero.
 - **N (aprendizado, de 0 a 10):** média das notas de LP e MT no SAEB, cada uma
   padronizada por (proficiência − Sinf) ÷ (Ssup − Sinf) × 10, com os limites
-  do SAEB 1997 (Inep):
+  definidos pelo NGR:
 
   | Etapa | LP Sinf–Ssup | MT Sinf–Ssup |
   | --- | --- | --- |
   | Anos Iniciais (1º ao 5º ano) | 49–324 | 60–322 |
-  | Anos Finais (6º ao 9º ano) | 100–400 | 100–400 |
+  | Anos Finais (6º ao 9º ano) | 49–324 | 60–322 |
   | Ensino Médio (1ª à 4ª série) | 117–451 | 111–467 |
 
 - **IDEB de 0 a 10, com uma casa decimal.**
@@ -33,6 +33,11 @@ nunca passa de 1, nenhuma nota passa de 10 e o IDEB fica entre 0 e 10.
 
 Diferenças de propósito para a planilha:
 
+- **Limites dos Anos Finais.** O Inep (SAEB 1997) e a planilha (C26, D26 e a
+  validação A26:B26) usam 100–400 nas duas disciplinas. Por decisão do NGR, o
+  simulador usa nos Anos Finais os mesmos limites dos Anos Iniciais. Com isso
+  a nota padronizada dos Anos Finais sai maior que a do Inep para a mesma
+  proficiência (LP 250 dá 7,31 em vez de 5,00).
 - **Taxa de aprovação zero.** A planilha soma `IFERROR(1/taxa; 0)` e divide
   pelo `COUNT` dos anos preenchidos: o zero não soma nada mas conta no
   divisor, e com isso *aumenta* P (pode passar de 1 e levar o IDEB acima
