@@ -236,8 +236,8 @@ function lerNumero(input, nomeCampo, min, max, casas) {
  * para o calculo, e so existe quando `erros` esta vazio.
  *
  * As aprovacoes sao opcionais uma a uma (a escola pode nao ter o ano), mas a
- * etapa precisa de ao menos uma. Ano em branco vai como null e o motor o deixa
- * fora da media.
+ * etapa precisa de ao menos uma acima de zero. Ano em branco vai como null; o
+ * motor deixa fora da media o ano em branco e o ano com zero.
  */
 function lerEtapa(chave) {
     const de = ETAPA_NAS_MENSAGENS[chave];
@@ -255,8 +255,8 @@ function lerEtapa(chave) {
         if (taxa.msg) erros.push({ alvo: input, msg: taxa.msg });
         aprovacoes.push(taxa.valor);
     });
-    if (aprovacoes.every((taxa) => taxa === null)) {
-        erros.push({ alvo: document.getElementById(`grade-${chave}-ap`), msg: `Informe a taxa de aprovação de ao menos um ano ${de}.` });
+    if (aprovacoes.every((taxa) => taxa === null || taxa === 0)) {
+        erros.push({ alvo: document.getElementById(`grade-${chave}-ap`), msg: `Informe a taxa de aprovação, maior que zero, de ao menos um ano ${de}.` });
     }
 
     const limites = LIMITES_SAEB[chave];
@@ -315,6 +315,13 @@ function descreverProficiencia(valor) {
     return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: CASAS_PROFICIENCIA });
 }
 
+/* Ano em branco e ano com zero ficam fora da media, e o resumo diz isso. */
+function descreverAprovacao(taxa) {
+    if (taxa === null) return 'em branco';
+    if (taxa === 0) return '0,00% (fora da média)';
+    return `${formatar(taxa, 2)}%`;
+}
+
 function montarResumo() {
     let html = '<h2 class="resumo-titulo">Resumo das Informações</h2>'
         + '<p class="pergunta-instrucao">Confira os dados antes de ver o resultado. Para corrigir algo, use Voltar.</p>';
@@ -322,7 +329,7 @@ function montarResumo() {
     estado.etapas.forEach((chave) => {
         const dados = estado.dados[chave];
         const aprovacoes = ANOS_DA_ETAPA[chave]
-            .map((ano, i) => `${ano}: ${dados.aprovacoes[i] === null ? 'em branco' : `${formatar(dados.aprovacoes[i], 2)}%`}`)
+            .map((ano, i) => `${ano}: ${descreverAprovacao(dados.aprovacoes[i])}`)
             .join(' · ');
         html += `
             <div class="resumo-etapa etapa-${chave}">

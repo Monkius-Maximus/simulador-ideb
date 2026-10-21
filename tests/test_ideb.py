@@ -9,7 +9,8 @@ HARMEAN(...)/100 das taxas, com ano em branco fora; Fluxo e 1 / P.
 
 Diferencas de proposito:
 - taxa de aprovacao zero: o HARMEAN da erro e a planilha deixa P, Fluxo e
-  IDEB em branco. O motor devolve P = 0, Fluxo null e IDEB 0,0;
+  IDEB em branco. O motor deixa o zero fora da media, como o ano em branco
+  (esperado = o caso sem o zero);
 - com N x P = 0 a planilha deixa o IDEB em branco (o AND da C14 trata zero
   como falso). O motor devolve 0,0.
 
@@ -56,15 +57,14 @@ CASOS = [
      0.842105263157895, 10.0, 8.42105263157895),
     ("AF 100/90/40/30 no teto", "af", [100, 90, 40, 30], 400, 400,
      0.503496503496503, 10.0, 5.03496503496503),
-    # Taxa zero: P = 0 (a planilha deixa P e IDEB em branco).
+    # Taxa zero fica fora da media, como o ano em branco (a planilha deixa
+    # P e IDEB em branco).
     ("EM 100/90/80/0, LP 300, MT 300", "em", [100, 90, 80, 0], 300, 300,
-     0.0, 5.3940153401063045, 0.0),
+     0.8925619834710744, 5.3940153401063045, 4.814493030838685),
     ("EM 100/90/50/0", "em", [100, 90, 50, 0], 423, 123,
-     0.0, 4.74937764919599, 0.0),
+     0.7297297297297298, 4.74937764919599, 3.4657620683322095),
     ("EM 0/0/0/100 no teto", "em", [0, 0, 0, 100], 451, 467,
-     0.0, 10.0, 0.0),
-    ("AF so zeros", "af", [0, 0], 260, 255,
-     0.0, 5.25, 0.0),
+     1.0, 10.0, 10.0),
 ]
 
 
@@ -93,7 +93,8 @@ process.stdout.write(JSON.stringify(casos.map((c) => calcularIdeb(c.chave, c.dad
 
 def conferir_limites() -> list[str]:
     """Dentro dos limites, P fica em 0..1, notas e N em 0..10 e o IDEB em
-    0..10, nas tres etapas. Fora deles, o motor recusa."""
+    0..10, nas tres etapas. Fora deles, ou sem taxa acima de zero, o motor
+    recusa."""
     runner = f"""
 {MOTOR.read_text("utf-8")}
 const falhas = [];
@@ -112,6 +113,8 @@ for (const chave of ['ai', 'af', 'em']) {{
   const fora = [
     {{aprovacoes: [101], lp: l.lp.inf, mt: l.mt.inf}},
     {{aprovacoes: [-1], lp: l.lp.inf, mt: l.mt.inf}},
+    {{aprovacoes: [0, 0], lp: l.lp.inf, mt: l.mt.inf}},
+    {{aprovacoes: [0, null, ''], lp: l.lp.inf, mt: l.mt.inf}},
     {{aprovacoes: [90], lp: l.lp.inf - 1, mt: l.mt.inf}},
     {{aprovacoes: [90], lp: l.lp.inf, mt: l.mt.sup + 1}},
   ];
@@ -133,9 +136,8 @@ def main() -> int:
         nome, *_, p, n, ideb = caso
         if abs(r["rendimento"] - p) > 1e-9:
             falhas.append(f"{nome}: P {r['rendimento']} != esperado {p}")
-        fluxo = None if p == 0 else 1 / p
-        if (r["fluxo"] is None) != (fluxo is None) or (fluxo is not None and abs(r["fluxo"] - fluxo) > 1e-9):
-            falhas.append(f"{nome}: Fluxo {r['fluxo']} != esperado {fluxo}")
+        if abs(r["fluxo"] - 1 / p) > 1e-9:
+            falhas.append(f"{nome}: Fluxo {r['fluxo']} != esperado {1 / p}")
         if abs(r["nota_saeb"] - n) > 1e-9:
             falhas.append(f"{nome}: N {r['nota_saeb']} != esperado {n}")
         if r["ideb"] != arredondar_excel(ideb, 1):

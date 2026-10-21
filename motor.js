@@ -5,9 +5,9 @@
 
      P   rendimento, de 0 a 1: media harmonica das taxas de aprovacao dos
          anos da etapa, como o HARMEAN(...)/100 da planilha. Ano em branco
-         (a escola nao tem a serie) fica fora da media. Qualquer taxa zero
-         leva P a 0.
-     Fluxo  inverso do rendimento, 1 / P. Sem valor quando P = 0.
+         (a escola nao tem a serie) e ano com taxa zero ficam fora da media,
+         como faz o Inep: nao existe media harmonica com zero.
+     Fluxo  inverso do rendimento, 1 / P.
      N   nota SAEB da etapa, de 0 a 10: media das notas padronizadas de LP e MT no
          SAEB, nota = (proficiencia - limite inferior) / (superior - inferior)
          x 10, com os limites do SAEB 1997 (Inep), diferentes por etapa.
@@ -18,9 +18,9 @@
    1, nenhuma nota passa de 10 e o IDEB fica sempre entre 0 e 10.
 
    Diferencas para a planilha, de proposito: com taxa zero o HARMEAN da erro
-   e P, Fluxo e IDEB ficam em branco; aqui P e 0 e o IDEB e 0,0. Com N x P = 0
-   a C14 fica em branco, porque o AND(...; E11*G7) trata zero como falso; aqui
-   o IDEB e 0,0.
+   e P, Fluxo e IDEB ficam em branco; aqui o zero fica fora da media, como o
+   ano em branco. Com N x P = 0 a C14 fica em branco, porque o AND(...; E11*G7)
+   trata zero como falso; aqui o IDEB e 0,0.
    ============================================================================ */
 
 var LIMITES_SAEB = {
@@ -48,24 +48,24 @@ function arredondar(valor, casas) {
 
 /**
  * P, de 0 a 1: HARMEAN(taxas)/100. Recebe as taxas em percentual (0 a 100),
- * uma por ano da etapa; ano em branco (null, undefined ou '') fica fora da
- * media, como celula vazia no HARMEAN. Qualquer taxa zero da P = 0.
+ * uma por ano da etapa. Ano em branco (null, undefined ou '') e ano com taxa
+ * zero ficam fora da media; precisa sobrar ao menos uma taxa acima de zero.
  */
 function calcularRendimento(aprovacoes) {
     var taxas = aprovacoes.filter(function (taxa) {
         return taxa !== null && taxa !== undefined && taxa !== '';
     }).map(Number);
-    if (taxas.length === 0) {
-        throw new Error('Informe ao menos uma taxa de aprovação da etapa.');
-    }
     taxas.forEach(function (taxa) {
         if (!(taxa >= 0 && taxa <= 100)) {
             throw new Error('Taxa de aprovação fora de 0 a 100: ' + taxa);
         }
     });
-    if (taxas.indexOf(0) !== -1) return 0;
-    var somaInversos = taxas.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
-    return taxas.length / somaInversos;
+    var validas = taxas.filter(function (taxa) { return taxa > 0; });
+    if (validas.length === 0) {
+        throw new Error('Informe ao menos uma taxa de aprovação da etapa maior que zero.');
+    }
+    var somaInversos = validas.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
+    return validas.length / somaInversos;
 }
 
 /** Nota de 0 a 10. A proficiencia precisa estar dentro dos limites da etapa. */
@@ -88,7 +88,7 @@ function calcularIdeb(chave, dados) {
     var notaSaeb = (notaLp + notaMt) / 2;
     return {
         rendimento: rendimento,
-        fluxo: rendimento === 0 ? null : 1 / rendimento,
+        fluxo: 1 / rendimento,
         nota_lp: notaLp,
         nota_mt: notaMt,
         nota_saeb: notaSaeb,

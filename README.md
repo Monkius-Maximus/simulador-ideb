@@ -15,9 +15,11 @@ IDEB = N × P, por etapa (não existe IDEB único da escola).
 - **P (rendimento, de 0 a 1):** média harmônica das taxas de aprovação dos
   anos da etapa, como na planilha: `P = HARMEAN(taxas) / 100`. Ano que a
   escola não tem fica em branco e fora da conta (null, undefined ou texto
-  vazio não entram no divisor). Qualquer taxa zero (ninguém aprovado) dá
-  P = 0. Ex.: 100, 90 e 80 dão P = 0,89, com ou sem um quarto ano em branco.
-- **Fluxo:** o inverso do rendimento, 1 ÷ P. Sem valor quando P = 0.
+  vazio não entram no divisor). Taxa zero também fica fora, como o Inep
+  calcula: não existe média harmônica com zero. A etapa precisa de ao menos
+  uma taxa acima de zero. Ex.: 100, 90 e 80 dão P = 0,89, com ou sem um
+  quarto ano em branco ou com 0.
+- **Fluxo:** o inverso do rendimento, 1 ÷ P.
 - **N (nota SAEB da etapa, de 0 a 10):** média das notas de LP e MT no SAEB, cada uma
   padronizada por (proficiência − Sinf) ÷ (Ssup − Sinf) × 10, com os limites
   do SAEB 1997 (Inep):
@@ -37,8 +39,8 @@ nunca passa de 1, nenhuma nota passa de 10 e o IDEB fica entre 0 e 10.
 Diferenças de propósito para a planilha:
 
 - **Taxa de aprovação zero.** O `HARMEAN` dá erro e a planilha deixa P,
-  Fluxo e IDEB em branco. O simulador mostra P = 0 e IDEB 0,0. A tela avisa
-  disso ao lado das aprovações.
+  Fluxo e IDEB em branco. O simulador deixa o zero fora da média, como o ano
+  em branco. A tela avisa disso ao lado das aprovações.
 - **N × P = 0.** A planilha deixa a célula em branco; o simulador mostra 0,0.
 
 ## Arquivos
