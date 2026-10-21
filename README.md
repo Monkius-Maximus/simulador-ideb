@@ -12,12 +12,12 @@ dela (não a pasta) vai para a raiz do repositório, e o GitHub Pages serve o
 
 IDEB = N × P, por etapa (não existe IDEB único da escola).
 
-- **P (rendimento, de 0 a 1):** média harmônica das taxas de aprovação dos anos da etapa.
-  Ano que a escola não tem fica em branco e fora da conta. Taxa zero (ninguém
-  aprovado) entra na contagem como série sem aprovados e reduz P na proporção
-  dela, sem zerar a etapa: P = média harmônica das taxas acima de zero ×
-  (séries com aprovados ÷ séries preenchidas). Sem zero, é a média harmônica
-  do Inep. Ex.: 100, 90, 80 e 0 dão P = 0,89 × 3/4 = 0,67.
+- **P (rendimento, de 0 a 1):** média harmônica das taxas de aprovação dos
+  anos da etapa, como na planilha: `P = HARMEAN(taxas) / 100`. Ano que a
+  escola não tem fica em branco e fora da conta (null, undefined ou texto
+  vazio não entram no divisor). Qualquer taxa zero (ninguém aprovado) dá
+  P = 0. Ex.: 100, 90 e 80 dão P = 0,89, com ou sem um quarto ano em branco.
+- **Fluxo:** o inverso do rendimento, 1 ÷ P. Sem valor quando P = 0.
 - **N (nota SAEB da etapa, de 0 a 10):** média das notas de LP e MT no SAEB, cada uma
   padronizada por (proficiência − Sinf) ÷ (Ssup − Sinf) × 10, com os limites
   do SAEB 1997 (Inep):
@@ -36,12 +36,9 @@ nunca passa de 1, nenhuma nota passa de 10 e o IDEB fica entre 0 e 10.
 
 Diferenças de propósito para a planilha:
 
-- **Taxa de aprovação zero.** A planilha soma `IFERROR(1/taxa; 0)` e divide
-  pelo `COUNT` dos anos preenchidos: o zero não soma nada mas conta no
-  divisor, e com isso *aumenta* P (pode passar de 1 e levar o IDEB acima
-  de 10): 100, 90, 80 e 0 dão P = 1,19. O Inep leva P a zero com qualquer
-  taxa zero. O simulador conta o zero como série sem aprovados (regra acima),
-  por decisão do NGR. A tela avisa disso ao lado das aprovações.
+- **Taxa de aprovação zero.** O `HARMEAN` dá erro e a planilha deixa P,
+  Fluxo e IDEB em branco. O simulador mostra P = 0 e IDEB 0,0. A tela avisa
+  disso ao lado das aprovações.
 - **N × P = 0.** A planilha deixa a célula em branco; o simulador mostra 0,0.
 
 ## Arquivos

@@ -4,14 +4,12 @@ planilha do Nucleo da Seplag (1_Simulador_Idepe_Ideb_e_Atingimento_de_metas).
 
 Os valores esperados sao os que a propria planilha calculou: os casos foram
 digitados nas celulas amarelas e a planilha recalculada no LibreOffice. P e N
-batem ate a 9a casa; o IDEB, com uma casa, como a celula C14 exibe.
+batem ate a 9a casa; o IDEB, com uma casa, como a celula C14 exibe. P e o
+HARMEAN(...)/100 das taxas, com ano em branco fora; Fluxo e 1 / P.
 
 Diferencas de proposito:
-- taxa de aprovacao zero: a planilha soma IFERROR(1/taxa; 0) e divide pelo
-  COUNT, entao o zero aumenta P (pode passar de 1). O motor conta o zero como
-  serie sem aprovados: P = media harmonica das taxas acima de zero x (series
-  com aprovados / series preenchidas). Nesses casos o esperado e calculado a
-  parte, em Decimal;
+- taxa de aprovacao zero: o HARMEAN da erro e a planilha deixa P, Fluxo e
+  IDEB em branco. O motor devolve P = 0, Fluxo null e IDEB 0,0;
 - com N x P = 0 a planilha deixa o IDEB em branco (o AND da C14 trata zero
   como falso). O motor devolve 0,0.
 
@@ -27,11 +25,15 @@ from pathlib import Path
 
 MOTOR = Path(__file__).resolve().parent.parent / "motor.js"
 
-# (descricao, etapa, aprovacoes preenchidas, LP, MT, P, N, IDEB da planilha)
+# (descricao, etapa, aprovacoes (None/"" = ano em branco), LP, MT, P, N, IDEB da planilha)
 CASOS = [
     ("AI cinco anos", "ai", [95, 92.5, 88, 90, 97.3], 210.5, 225.3,
      0.924396112552462, 6.09094378903539, 5.63044476035988),
-    ("AF sem o 7o ano", "af", [85, 80.2, 91], 255, 250,
+    ("AI sem o 2o e o 4o ano", "ai", [95, None, 88, None, 97.3], 210.5, 225.3,
+     0.932619936635086, 6.09094378903539, 5.68053561057806),
+    ("AF sem o 7o ano", "af", [85, None, 80.2, 91], 255, 250,
+     0.85172721531153, 5.08333333333333, 4.32961334450028),
+    ("AF sem o 7o ano, em branco como ''", "af", [85, "", 80.2, 91], 255, 250,
      0.85172721531153, 5.08333333333333, 4.32961334450028),
     ("EM com 4a serie", "em", [78, 82.5, 90, 100], 280, 275.6,
      0.868567572127552, 4.75191751328803, 4.12736145746698),
@@ -54,13 +56,13 @@ CASOS = [
      0.842105263157895, 10.0, 8.42105263157895),
     ("AF 100/90/40/30 no teto", "af", [100, 90, 40, 30], 400, 400,
      0.503496503496503, 10.0, 5.03496503496503),
-    # Taxa zero: serie sem aprovados, reduz P sem zerar (planilha daria P > 1).
+    # Taxa zero: P = 0 (a planilha deixa P e IDEB em branco).
     ("EM 100/90/80/0, LP 300, MT 300", "em", [100, 90, 80, 0], 300, 300,
-     0.6694214876033058, 5.3940153401063045, 3.610869773129014),
+     0.0, 5.3940153401063045, 0.0),
     ("EM 100/90/50/0", "em", [100, 90, 50, 0], 423, 123,
-     0.5472972972972973, 4.74937764919599, 2.5993215512491568),
+     0.0, 4.74937764919599, 0.0),
     ("EM 0/0/0/100 no teto", "em", [0, 0, 0, 100], 451, 467,
-     0.25, 10.0, 2.5),
+     0.0, 10.0, 0.0),
     ("AF so zeros", "af", [0, 0], 260, 255,
      0.0, 5.25, 0.0),
 ]
@@ -131,6 +133,9 @@ def main() -> int:
         nome, *_, p, n, ideb = caso
         if abs(r["rendimento"] - p) > 1e-9:
             falhas.append(f"{nome}: P {r['rendimento']} != esperado {p}")
+        fluxo = None if p == 0 else 1 / p
+        if (r["fluxo"] is None) != (fluxo is None) or (fluxo is not None and abs(r["fluxo"] - fluxo) > 1e-9):
+            falhas.append(f"{nome}: Fluxo {r['fluxo']} != esperado {fluxo}")
         if abs(r["nota_saeb"] - n) > 1e-9:
             falhas.append(f"{nome}: N {r['nota_saeb']} != esperado {n}")
         if r["ideb"] != arredondar_excel(ideb, 1):

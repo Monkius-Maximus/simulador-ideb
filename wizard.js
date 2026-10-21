@@ -236,7 +236,8 @@ function lerNumero(input, nomeCampo, min, max, casas) {
  * para o calculo, e so existe quando `erros` esta vazio.
  *
  * As aprovacoes sao opcionais uma a uma (a escola pode nao ter o ano), mas a
- * etapa precisa de ao menos uma. Ano em branco fica de fora da media.
+ * etapa precisa de ao menos uma. Ano em branco vai como null e o motor o deixa
+ * fora da media.
  */
 function lerEtapa(chave) {
     const de = ETAPA_NAS_MENSAGENS[chave];
@@ -338,12 +339,7 @@ function montarResumo() {
 function mostrarResumo() {
     estado.resultados = {};
     estado.etapas.forEach((chave) => {
-        const dados = estado.dados[chave];
-        estado.resultados[chave] = calcularIdeb(chave, {
-            aprovacoes: dados.aprovacoes.filter((taxa) => taxa !== null),
-            lp: dados.lp,
-            mt: dados.mt,
-        });
+        estado.resultados[chave] = calcularIdeb(chave, estado.dados[chave]);
     });
     estado.stepAtual = PASSO_RESUMO;
     document.getElementById('resumo-area').innerHTML = montarResumo();
