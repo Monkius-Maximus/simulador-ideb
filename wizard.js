@@ -15,6 +15,7 @@ const PASSO_DA_ETAPA = { ai: 1, af: 2, em: 3 };
 const ETAPAS = ['ai', 'af', 'em'];
 
 const NOME_ETAPA = { ai: 'Anos Iniciais', af: 'Anos Finais', em: 'Ensino Médio' };
+const SIGLA_ETAPA = { ai: 'AI', af: 'AF', em: 'EM' };
 /* Nomes das etapas como aparecem nas mensagens: "dos Anos Iniciais". */
 const ETAPA_NAS_MENSAGENS = { ai: 'dos Anos Iniciais', af: 'dos Anos Finais', em: 'do Ensino Médio' };
 
@@ -207,21 +208,25 @@ function teclaNaOpcao(e, card) {
     toggleEtapa(card);
 }
 
+/* Casas decimais aceitas em cada campo. */
+const CASAS_APROVACAO = 2;
+const CASAS_PROFICIENCIA = 4;
+const CASAS_POR_EXTENSO = { 2: 'duas', 4: 'quatro' };
+
 /**
- * Le um campo numerico com ate duas casas decimais. Devolve { valor } ou
+ * Le um campo numerico com ate `casas` casas decimais. Devolve { valor } ou
  * { msg } com o motivo da recusa.
+ *
+ * O campo e de texto, e quem le o numero e o simulador: o campo numerico do
+ * navegador trata a virgula de um jeito em cada navegador, e ha navegador que
+ * a apaga ("9,5" virava 95). Aceita virgula ou ponto como separador decimal.
  */
-function lerNumero(input, nomeCampo, min, max) {
+function lerNumero(input, nomeCampo, min, max, casas) {
     const texto = input.value.trim();
-    if (texto === '') {
-        // Campo com texto invalido (ex.: letras) chega vazio: validity diferencia.
-        return { msg: input.validity.badInput
-            ? `O campo ${nomeCampo} tem um valor inválido. Use apenas números.`
-            : `Preencha o campo ${nomeCampo}.` };
-    }
-    const valor = Number(texto);
-    if (!/^\d+(\.\d{1,2})?$/.test(texto) || valor < min || valor > max) {
-        return { msg: `${nomeCampo}: informe um valor de ${formatar(min, 2)} a ${formatar(max, 2)}, com até duas casas decimais.` };
+    if (texto === '') return { msg: `Preencha o campo ${nomeCampo}.` };
+    const valor = Number(texto.replace(',', '.'));
+    if (!new RegExp(`^\\d+([.,]\\d{1,${casas}})?$`).test(texto) || valor < min || valor > max) {
+        return { msg: `${nomeCampo}: informe um valor de ${formatar(min, 2)} a ${formatar(max, 2)}, com até ${CASAS_POR_EXTENSO[casas]} casas decimais.` };
     }
     return { valor };
 }
@@ -231,7 +236,8 @@ function lerNumero(input, nomeCampo, min, max) {
  * para o calculo, e so existe quando `erros` esta vazio.
  *
  * As aprovacoes sao opcionais uma a uma (a escola pode nao ter o ano), mas a
- * etapa precisa de ao menos uma. Ano em branco fica de fora da media.
+ * etapa precisa de ao menos uma acima de zero. Ano em branco vai como null; o
+ * motor deixa fora da media o ano em branco e o ano com zero.
  */
 function lerEtapa(chave) {
     const de = ETAPA_NAS_MENSAGENS[chave];
@@ -241,22 +247,22 @@ function lerEtapa(chave) {
     const aprovacoes = [];
     ANOS_DA_ETAPA[chave].forEach((ano, i) => {
         const input = campo(`ap-${i + 1}`);
-        if (input.value.trim() === '' && !input.validity.badInput) {
+        if (input.value.trim() === '') {
             aprovacoes.push(null);
             return;
         }
-        const taxa = lerNumero(input, `Aprovação (${ano}) ${de}`, APROVACAO_MIN, APROVACAO_MAX);
+        const taxa = lerNumero(input, `Aprovação (${ano}) ${de}`, APROVACAO_MIN, APROVACAO_MAX, CASAS_APROVACAO);
         if (taxa.msg) erros.push({ alvo: input, msg: taxa.msg });
         aprovacoes.push(taxa.valor);
     });
-    if (aprovacoes.every((taxa) => taxa === null)) {
-        erros.push({ alvo: document.getElementById(`grade-${chave}-ap`), msg: `Informe a taxa de aprovação de ao menos um ano ${de}.` });
+    if (aprovacoes.every((taxa) => taxa === null || taxa === 0)) {
+        erros.push({ alvo: document.getElementById(`grade-${chave}-ap`), msg: `Informe a taxa de aprovação, maior que zero, de ao menos um ano ${de}.` });
     }
 
     const limites = LIMITES_SAEB[chave];
-    const lp = lerNumero(campo('lp'), `Proficiência em Língua Portuguesa ${de}`, limites.lp.inf, limites.lp.sup);
+    const lp = lerNumero(campo('lp'), `Proficiência em Língua Portuguesa ${de}`, limites.lp.inf, limites.lp.sup, CASAS_PROFICIENCIA);
     if (lp.msg) erros.push({ alvo: campo('lp'), msg: lp.msg });
-    const mt = lerNumero(campo('mt'), `Proficiência em Matemática ${de}`, limites.mt.inf, limites.mt.sup);
+    const mt = lerNumero(campo('mt'), `Proficiência em Matemática ${de}`, limites.mt.inf, limites.mt.sup, CASAS_PROFICIENCIA);
     if (mt.msg) erros.push({ alvo: campo('mt'), msg: mt.msg });
 
     if (erros.length > 0) return { dados: null, erros };
@@ -304,6 +310,18 @@ function formatar(valor, casas) {
     return arredondar(valor, casas).toFixed(casas).replace('.', ',');
 }
 
+/* Proficiencia como foi digitada: de duas a quatro casas. */
+function descreverProficiencia(valor) {
+    return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: CASAS_PROFICIENCIA });
+}
+
+/* Ano em branco e ano com zero ficam fora da media, e o resumo diz isso. */
+function descreverAprovacao(taxa) {
+    if (taxa === null) return 'em branco';
+    if (taxa === 0) return '0,00% (fora da média)';
+    return `${formatar(taxa, 2)}%`;
+}
+
 function montarResumo() {
     let html = '<h2 class="resumo-titulo">Resumo das Informações</h2>'
         + '<p class="pergunta-instrucao">Confira os dados antes de ver o resultado. Para corrigir algo, use Voltar.</p>';
@@ -311,14 +329,14 @@ function montarResumo() {
     estado.etapas.forEach((chave) => {
         const dados = estado.dados[chave];
         const aprovacoes = ANOS_DA_ETAPA[chave]
-            .map((ano, i) => `${ano}: ${dados.aprovacoes[i] === null ? 'em branco' : `${formatar(dados.aprovacoes[i], 2)}%`}`)
+            .map((ano, i) => `${ano}: ${descreverAprovacao(dados.aprovacoes[i])}`)
             .join(' · ');
         html += `
             <div class="resumo-etapa etapa-${chave}">
                 <strong class="etapa-nome etapa-${chave}">${NOME_ETAPA[chave]}</strong>
                 <ul>
                     <li>Aprovação — ${aprovacoes}</li>
-                    <li>SAEB — Língua Portuguesa: ${formatar(dados.lp, 2)} · Matemática: ${formatar(dados.mt, 2)}</li>
+                    <li>SAEB — <span class="disc disc-lp" title="Língua Portuguesa">LP</span>${descreverProficiencia(dados.lp)} · <span class="disc disc-mt" title="Matemática">MAT</span>${descreverProficiencia(dados.mt)}</li>
                 </ul>
             </div>`;
     });
@@ -328,12 +346,7 @@ function montarResumo() {
 function mostrarResumo() {
     estado.resultados = {};
     estado.etapas.forEach((chave) => {
-        const dados = estado.dados[chave];
-        estado.resultados[chave] = calcularIdeb(chave, {
-            aprovacoes: dados.aprovacoes.filter((taxa) => taxa !== null),
-            lp: dados.lp,
-            mt: dados.mt,
-        });
+        estado.resultados[chave] = calcularIdeb(chave, estado.dados[chave]);
     });
     estado.stepAtual = PASSO_RESUMO;
     document.getElementById('resumo-area').innerHTML = montarResumo();
@@ -341,7 +354,7 @@ function mostrarResumo() {
 }
 
 const MENSAGEM_RESULTADO =
-    'O IDEB vai de 0 a 10 e é o produto do aprendizado (N), medido pelas notas do SAEB, pelo fluxo (P), medido pelas taxas de aprovação. Para subir o IDEB, as duas partes contam: estudantes aprendendo mais e sendo aprovados na idade certa.';
+    'O IDEB vai de 0 a 10 e é o produto da nota SAEB (N), medida pelas proficiências de Língua Portuguesa e Matemática, pelo rendimento (P), medido pelas taxas de aprovação. Para subir o IDEB, as duas partes contam: estudantes aprendendo mais e sendo aprovados na idade certa.';
 
 function mostrarResultado() {
     estado.stepAtual = PASSO_RESULTADO;
@@ -356,7 +369,14 @@ function mostrarResultado() {
                     <span class="label-pct">IDEB</span>
                 </div>
                 <strong class="etapa-nome etapa-${chave}">${NOME_ETAPA[chave]}</strong>
-                <p class="selo-conta">Aprendizado (N) ${formatar(r.nota_saeb, 2)}<br>× Fluxo (P) ${formatar(r.rendimento, 2)}</p>
+                <p class="selo-conta">Nota SAEB ${SIGLA_ETAPA[chave]} (N) ${formatar(r.nota_saeb, 2)}<br>× Rendimento (P) ${formatar(r.rendimento, 2)}</p>
+                <div class="selo-notas">
+                    <span class="selo-notas-titulo">Notas padronizadas</span>
+                    <div class="selo-notas-colunas">
+                        <span class="selo-nota" aria-label="Língua Portuguesa: ${formatar(r.nota_lp, 2)}"><span class="disc disc-lp" title="Língua Portuguesa">LP</span><strong>${formatar(r.nota_lp, 2)}</strong></span>
+                        <span class="selo-nota" aria-label="Matemática: ${formatar(r.nota_mt, 2)}"><span class="disc disc-mt" title="Matemática">MAT</span><strong>${formatar(r.nota_mt, 2)}</strong></span>
+                    </div>
+                </div>
             </div>`;
     }).join('');
 

@@ -3,16 +3,24 @@
 
    IDEB = N x P, calculado por etapa. Nao existe IDEB unico da escola.
 
-     P   rendimento: media harmonica das taxas de aprovacao dos anos da
-         etapa que a escola tem. F7 = media de 1/taxa, G7 = inverso.
-         Ano em branco fica fora da media (COUNT so conta o preenchido).
-     N   aprendizado: media das notas padronizadas de LP e MT no SAEB,
-         nota = (proficiencia - limite inferior) / (superior - inferior) x 10,
-         com os limites do SAEB 1997 (Inep).
-     IDEB  N x P, divulgado com uma casa decimal.
+     P   rendimento, de 0 a 1: media harmonica das taxas de aprovacao dos
+         anos da etapa, como o HARMEAN(...)/100 da planilha. Ano em branco
+         (a escola nao tem a serie) e ano com taxa zero ficam fora da media,
+         como faz o Inep: nao existe media harmonica com zero.
+     Fluxo  inverso do rendimento, 1 / P.
+     N   nota SAEB da etapa, de 0 a 10: media das notas padronizadas de LP e MT no
+         SAEB, nota = (proficiencia - limite inferior) / (superior - inferior)
+         x 10, com os limites do SAEB 1997 (Inep), diferentes por etapa.
+     IDEB  N x P, de 0 a 10, divulgado com uma casa decimal.
 
-   Diferenca para a planilha, de proposito: com N x P = 0 a C14 fica em
-   branco, porque o AND(...; E11*G7) trata zero como falso. Aqui o IDEB e 0,0.
+   Os limites sao condicao de entrada: taxa fora de 0 a 100 ou proficiencia
+   fora dos limites da etapa param o calculo com erro. Assim P nunca passa de
+   1, nenhuma nota passa de 10 e o IDEB fica sempre entre 0 e 10.
+
+   Diferencas para a planilha, de proposito: com taxa zero o HARMEAN da erro
+   e P, Fluxo e IDEB ficam em branco; aqui o zero fica fora da media, como o
+   ano em branco. Com N x P = 0 a C14 fica em branco, porque o AND(...; E11*G7)
+   trata zero como falso; aqui o IDEB e 0,0.
    ============================================================================ */
 
 var LIMITES_SAEB = {
@@ -39,24 +47,38 @@ function arredondar(valor, casas) {
 }
 
 /**
- * P. Recebe as taxas em percentual (0 a 100), so dos anos preenchidos.
- * Uma taxa zero leva P a zero: 1/0 e Infinity, o inverso da media tambem.
+ * P, de 0 a 1: HARMEAN(taxas)/100. Recebe as taxas em percentual (0 a 100),
+ * uma por ano da etapa. Ano em branco (null, undefined ou '') e ano com taxa
+ * zero ficam fora da media; precisa sobrar ao menos uma taxa acima de zero.
  */
 function calcularRendimento(aprovacoes) {
-    if (aprovacoes.length === 0) {
-        throw new Error('Informe ao menos uma taxa de aprovação da etapa.');
+    var taxas = aprovacoes.filter(function (taxa) {
+        return taxa !== null && taxa !== undefined && taxa !== '';
+    }).map(Number);
+    taxas.forEach(function (taxa) {
+        if (!(taxa >= 0 && taxa <= 100)) {
+            throw new Error('Taxa de aprovação fora de 0 a 100: ' + taxa);
+        }
+    });
+    var validas = taxas.filter(function (taxa) { return taxa > 0; });
+    if (validas.length === 0) {
+        throw new Error('Informe ao menos uma taxa de aprovação da etapa maior que zero.');
     }
-    var somaInversos = aprovacoes.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
-    return aprovacoes.length / somaInversos;
+    var somaInversos = validas.reduce(function (s, taxa) { return s + 100 / taxa; }, 0);
+    return validas.length / somaInversos;
 }
 
+/** Nota de 0 a 10. A proficiencia precisa estar dentro dos limites da etapa. */
 function padronizar(proficiencia, limite) {
+    if (!(proficiencia >= limite.inf && proficiencia <= limite.sup)) {
+        throw new Error('Proficiência fora dos limites do SAEB (' + limite.inf + ' a ' + limite.sup + '): ' + proficiencia);
+    }
     return ((proficiencia - limite.inf) / (limite.sup - limite.inf)) * 10;
 }
 
 /**
  * IDEB de uma etapa. `chave` e 'ai', 'af' ou 'em'; `dados` traz
- * { aprovacoes: [taxas preenchidas], lp, mt }.
+ * { aprovacoes: [taxa de cada ano, null no ano em branco], lp, mt }.
  */
 function calcularIdeb(chave, dados) {
     var limites = LIMITES_SAEB[chave];
@@ -66,6 +88,7 @@ function calcularIdeb(chave, dados) {
     var notaSaeb = (notaLp + notaMt) / 2;
     return {
         rendimento: rendimento,
+        fluxo: 1 / rendimento,
         nota_lp: notaLp,
         nota_mt: notaMt,
         nota_saeb: notaSaeb,

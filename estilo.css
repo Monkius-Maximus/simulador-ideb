@@ -26,13 +26,21 @@
     --raio: 12px;
     --overlay: rgba(15, 23, 42, 0.45);
 
-    /* Uma cor por etapa, usada so no nome da etapa, em todas as telas: roxo,
-       petroleo e castanho. Fora dos tons de vermelho e verde, que o sistema usa
-       para certo/errado e positivo/negativo; distintas entre si inclusive com
-       daltonismo; contraste >= 5,7:1 em todos os fundos onde aparecem. */
+    /* Vermelho e tons avermelhados (rosa, castanho, laranja) indicam
+       resultado ruim e verde indica resultado bom nos sistemas do NGR. Etapas
+       e disciplinas sao so identificacao, entao ficam fora dessas faixas. */
+
+    /* Uma cor por etapa, usada no nome da etapa e no selo do IDEB: roxo,
+       petroleo e indigo. Contraste >= 6,6:1 em todos os fundos onde aparecem. */
     --etapa-ai: #7e22ce;
     --etapa-af: #155e75;
-    --etapa-em: #78350f;
+    --etapa-em: #3730a3;
+
+    /* Uma cor por disciplina, usada so no selo "LP" e "MAT": azul e ardosia.
+       Distintas entre si tambem com daltonismo. Texto branco com contraste
+       acima de 6:1 nas duas. */
+    --disc-lp: #1d4ed8;
+    --disc-mt: #475569;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -434,6 +442,10 @@ body {
     flex-shrink: 0;
 }
 .footer-creditos {
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -450,6 +462,37 @@ body {
 .footer-creditos .sem-quebra {
     white-space: nowrap;
 }
+.footer-creditos:hover span { text-decoration: underline; }
+.footer-creditos:focus-visible {
+    outline: 3px solid var(--azul-claro);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* Videos e WhatsApp juntos no canto direito */
+.footer-grupo {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+a.footer-btn { text-decoration: none; }
+
+/* Popup de creditos: a imagem do NGR-Educacao no topo */
+.popup-creditos-body {
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.5;
+    text-align: center;
+}
+.popup-creditos-body p + p { margin-top: 10px; }
+.popup-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
 .footer-logo {
     height: 32px;
     width: 32px;
@@ -740,6 +783,12 @@ body {
         height: 24px;
         width: 24px;
     }
+    /* Tres botoes numa linha so ate 360px: Saiba mais, Videos e WhatsApp. */
+    .footer-btn {
+        padding: 7px 10px;
+        gap: 5px;
+    }
+    .footer-grupo { gap: 6px; }
 }
 
 /* ============================================================================
@@ -774,6 +823,25 @@ body {
 .grade-aprovacoes.com-erro .input-campo input { border-color: var(--vermelho); }
 .grade-aprovacoes > .erro-campo { grid-column: 1 / -1; margin-top: 0; }
 
+/* Selo da disciplina: "LP" ou "MAT", sempre na cor reservada a ela */
+.disc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.7em;
+    padding: 1px 6px;
+    margin-right: 6px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    color: #fff;
+    vertical-align: 0.1em;
+}
+.disc-lp { background: var(--disc-lp); }
+.disc-mt { background: var(--disc-mt); }
+
 /* Resumo: uma caixa por etapa com o que foi digitado */
 .resumo-etapa {
     padding: 12px 14px;
@@ -794,7 +862,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 12px 16px;
     width: 100%;
     margin-bottom: 12px;
 }
@@ -802,7 +870,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 180px;
+    width: 190px;
     text-align: center;
 }
 .selo-etapa .resultado-badge {
@@ -817,4 +885,39 @@ body {
     font-size: 0.85rem;
     color: #374151;
     line-height: 1.4;
+}
+
+/* Notas padronizadas de LP e MT, abaixo da conta N x P. N e a media delas. */
+.selo-notas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px 12px 12px;
+    border: 1px solid var(--cinza-claro);
+    border-radius: 10px;
+    background: var(--card);
+}
+.selo-notas-titulo {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--cinza);
+}
+.selo-notas-colunas {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+.selo-nota {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.selo-nota .disc { margin-right: 0; }
+.selo-nota strong {
+    font-size: 1.05rem;
+    color: #1f2937;
 }

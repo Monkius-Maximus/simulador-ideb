@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador IDEB — NGR-EDU</title>
     <link rel="icon" type="image/png" href="img/logo-ngr.png">
-    <link rel="stylesheet" href="estilo.css">
+    <!-- O ?v= obriga o navegador a buscar o CSS e o JS novos quando o HTML
+         muda. Mexeu em estilo.css, motor.js ou wizard.js? Troque o numero. -->
+    <link rel="stylesheet" href="estilo.css?v=20261021a">
 </head>
 <body>
 
@@ -58,25 +60,25 @@
                 <h2 class="pergunta-titulo">Informe os dados dos <span class="etapa-nome etapa-ai">Anos Iniciais</span></h2>
 
                 <h3 class="secao-titulo">Fluxo: taxas de aprovação</h3>
-                <p class="dica-secao" id="dica-ai-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong></p>
+                <p class="dica-secao" id="dica-ai-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong> Zero fica fora da média, como o ano em branco.</p>
                 <div class="grade-aprovacoes" id="grade-ai-ap">
-                    <div class="input-campo"><label for="inp-ai-ap-1">1º ano</label><input type="number" id="inp-ai-ap-1" inputmode="decimal" placeholder="Ex: 95.50" min="0" max="100" step="0.01" aria-describedby="dica-ai-ap"></div>
-                    <div class="input-campo"><label for="inp-ai-ap-2">2º ano</label><input type="number" id="inp-ai-ap-2" inputmode="decimal" placeholder="Ex: 95.50" min="0" max="100" step="0.01" aria-describedby="dica-ai-ap"></div>
-                    <div class="input-campo"><label for="inp-ai-ap-3">3º ano</label><input type="number" id="inp-ai-ap-3" inputmode="decimal" placeholder="Ex: 95.50" min="0" max="100" step="0.01" aria-describedby="dica-ai-ap"></div>
-                    <div class="input-campo"><label for="inp-ai-ap-4">4º ano</label><input type="number" id="inp-ai-ap-4" inputmode="decimal" placeholder="Ex: 95.50" min="0" max="100" step="0.01" aria-describedby="dica-ai-ap"></div>
-                    <div class="input-campo"><label for="inp-ai-ap-5">5º ano</label><input type="number" id="inp-ai-ap-5" inputmode="decimal" placeholder="Ex: 95.50" min="0" max="100" step="0.01" aria-describedby="dica-ai-ap"></div>
+                    <div class="input-campo"><label for="inp-ai-ap-1">1º ano</label><input type="text" id="inp-ai-ap-1" inputmode="decimal" placeholder="Ex: 95,50" aria-describedby="dica-ai-ap"></div>
+                    <div class="input-campo"><label for="inp-ai-ap-2">2º ano</label><input type="text" id="inp-ai-ap-2" inputmode="decimal" placeholder="Ex: 95,50" aria-describedby="dica-ai-ap"></div>
+                    <div class="input-campo"><label for="inp-ai-ap-3">3º ano</label><input type="text" id="inp-ai-ap-3" inputmode="decimal" placeholder="Ex: 95,50" aria-describedby="dica-ai-ap"></div>
+                    <div class="input-campo"><label for="inp-ai-ap-4">4º ano</label><input type="text" id="inp-ai-ap-4" inputmode="decimal" placeholder="Ex: 95,50" aria-describedby="dica-ai-ap"></div>
+                    <div class="input-campo"><label for="inp-ai-ap-5">5º ano</label><input type="text" id="inp-ai-ap-5" inputmode="decimal" placeholder="Ex: 95,50" aria-describedby="dica-ai-ap"></div>
                 </div>
 
                 <h3 class="secao-titulo">Aprendizado: proficiências no SAEB</h3>
                 <div class="input-grupo">
                     <div class="input-campo">
-                        <label for="inp-ai-lp">Proficiência em Língua Portuguesa dos <span class="etapa-nome etapa-ai">Anos Iniciais</span></label>
-                        <input type="number" id="inp-ai-lp" inputmode="decimal" placeholder="Ex: 210.50" min="49" max="324" step="0.01" aria-describedby="dica-ai-lp">
+                        <label for="inp-ai-lp"><span class="disc disc-lp" aria-hidden="true">LP</span>Proficiência em Língua Portuguesa dos <span class="etapa-nome etapa-ai">Anos Iniciais</span></label>
+                        <input type="text" id="inp-ai-lp" inputmode="decimal" placeholder="Ex: 210,50" aria-describedby="dica-ai-lp">
                         <p class="dica-campo" id="dica-ai-lp">Média da escola no SAEB. De 49,00 a 324,00.</p>
                     </div>
                     <div class="input-campo">
-                        <label for="inp-ai-mt">Proficiência em Matemática dos <span class="etapa-nome etapa-ai">Anos Iniciais</span></label>
-                        <input type="number" id="inp-ai-mt" inputmode="decimal" placeholder="Ex: 225.30" min="60" max="322" step="0.01" aria-describedby="dica-ai-mt">
+                        <label for="inp-ai-mt"><span class="disc disc-mt" aria-hidden="true">MAT</span>Proficiência em Matemática dos <span class="etapa-nome etapa-ai">Anos Iniciais</span></label>
+                        <input type="text" id="inp-ai-mt" inputmode="decimal" placeholder="Ex: 225,30" aria-describedby="dica-ai-mt">
                         <p class="dica-campo" id="dica-ai-mt">Média da escola no SAEB. De 60,00 a 322,00.</p>
                     </div>
                 </div>
@@ -87,24 +89,24 @@
                 <h2 class="pergunta-titulo">Informe os dados dos <span class="etapa-nome etapa-af">Anos Finais</span></h2>
 
                 <h3 class="secao-titulo">Fluxo: taxas de aprovação</h3>
-                <p class="dica-secao" id="dica-af-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong></p>
+                <p class="dica-secao" id="dica-af-ap">Taxa de aprovação de cada ano, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem o ano, deixe em branco.</strong> Zero fica fora da média, como o ano em branco.</p>
                 <div class="grade-aprovacoes" id="grade-af-ap">
-                    <div class="input-campo"><label for="inp-af-ap-1">6º ano</label><input type="number" id="inp-af-ap-1" inputmode="decimal" placeholder="Ex: 90.00" min="0" max="100" step="0.01" aria-describedby="dica-af-ap"></div>
-                    <div class="input-campo"><label for="inp-af-ap-2">7º ano</label><input type="number" id="inp-af-ap-2" inputmode="decimal" placeholder="Ex: 90.00" min="0" max="100" step="0.01" aria-describedby="dica-af-ap"></div>
-                    <div class="input-campo"><label for="inp-af-ap-3">8º ano</label><input type="number" id="inp-af-ap-3" inputmode="decimal" placeholder="Ex: 90.00" min="0" max="100" step="0.01" aria-describedby="dica-af-ap"></div>
-                    <div class="input-campo"><label for="inp-af-ap-4">9º ano</label><input type="number" id="inp-af-ap-4" inputmode="decimal" placeholder="Ex: 90.00" min="0" max="100" step="0.01" aria-describedby="dica-af-ap"></div>
+                    <div class="input-campo"><label for="inp-af-ap-1">6º ano</label><input type="text" id="inp-af-ap-1" inputmode="decimal" placeholder="Ex: 90,00" aria-describedby="dica-af-ap"></div>
+                    <div class="input-campo"><label for="inp-af-ap-2">7º ano</label><input type="text" id="inp-af-ap-2" inputmode="decimal" placeholder="Ex: 90,00" aria-describedby="dica-af-ap"></div>
+                    <div class="input-campo"><label for="inp-af-ap-3">8º ano</label><input type="text" id="inp-af-ap-3" inputmode="decimal" placeholder="Ex: 90,00" aria-describedby="dica-af-ap"></div>
+                    <div class="input-campo"><label for="inp-af-ap-4">9º ano</label><input type="text" id="inp-af-ap-4" inputmode="decimal" placeholder="Ex: 90,00" aria-describedby="dica-af-ap"></div>
                 </div>
 
                 <h3 class="secao-titulo">Aprendizado: proficiências no SAEB</h3>
                 <div class="input-grupo">
                     <div class="input-campo">
-                        <label for="inp-af-lp">Proficiência em Língua Portuguesa dos <span class="etapa-nome etapa-af">Anos Finais</span></label>
-                        <input type="number" id="inp-af-lp" inputmode="decimal" placeholder="Ex: 255.00" min="100" max="400" step="0.01" aria-describedby="dica-af-lp">
+                        <label for="inp-af-lp"><span class="disc disc-lp" aria-hidden="true">LP</span>Proficiência em Língua Portuguesa dos <span class="etapa-nome etapa-af">Anos Finais</span></label>
+                        <input type="text" id="inp-af-lp" inputmode="decimal" placeholder="Ex: 255,00" aria-describedby="dica-af-lp">
                         <p class="dica-campo" id="dica-af-lp">Média da escola no SAEB. De 100,00 a 400,00.</p>
                     </div>
                     <div class="input-campo">
-                        <label for="inp-af-mt">Proficiência em Matemática dos <span class="etapa-nome etapa-af">Anos Finais</span></label>
-                        <input type="number" id="inp-af-mt" inputmode="decimal" placeholder="Ex: 250.00" min="100" max="400" step="0.01" aria-describedby="dica-af-mt">
+                        <label for="inp-af-mt"><span class="disc disc-mt" aria-hidden="true">MAT</span>Proficiência em Matemática dos <span class="etapa-nome etapa-af">Anos Finais</span></label>
+                        <input type="text" id="inp-af-mt" inputmode="decimal" placeholder="Ex: 250,00" aria-describedby="dica-af-mt">
                         <p class="dica-campo" id="dica-af-mt">Média da escola no SAEB. De 100,00 a 400,00.</p>
                     </div>
                 </div>
@@ -115,24 +117,24 @@
                 <h2 class="pergunta-titulo">Informe os dados do <span class="etapa-nome etapa-em">Ensino Médio</span></h2>
 
                 <h3 class="secao-titulo">Fluxo: taxas de aprovação</h3>
-                <p class="dica-secao" id="dica-em-ap">Taxa de aprovação de cada série, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem a série, deixe em branco</strong> (a 4ª série só existe no ensino médio integrado).</p>
+                <p class="dica-secao" id="dica-em-ap">Taxa de aprovação de cada série, em %, do Censo Escolar. De 0,00 a 100,00. <strong>Se a escola não tem a série, deixe em branco</strong> (a 4ª série só existe no ensino médio integrado). Zero fica fora da média, como a série em branco.</p>
                 <div class="grade-aprovacoes" id="grade-em-ap">
-                    <div class="input-campo"><label for="inp-em-ap-1">1ª série</label><input type="number" id="inp-em-ap-1" inputmode="decimal" placeholder="Ex: 85.00" min="0" max="100" step="0.01" aria-describedby="dica-em-ap"></div>
-                    <div class="input-campo"><label for="inp-em-ap-2">2ª série</label><input type="number" id="inp-em-ap-2" inputmode="decimal" placeholder="Ex: 85.00" min="0" max="100" step="0.01" aria-describedby="dica-em-ap"></div>
-                    <div class="input-campo"><label for="inp-em-ap-3">3ª série</label><input type="number" id="inp-em-ap-3" inputmode="decimal" placeholder="Ex: 85.00" min="0" max="100" step="0.01" aria-describedby="dica-em-ap"></div>
-                    <div class="input-campo"><label for="inp-em-ap-4">4ª série</label><input type="number" id="inp-em-ap-4" inputmode="decimal" placeholder="Ex: 85.00" min="0" max="100" step="0.01" aria-describedby="dica-em-ap"></div>
+                    <div class="input-campo"><label for="inp-em-ap-1">1ª série</label><input type="text" id="inp-em-ap-1" inputmode="decimal" placeholder="Ex: 85,00" aria-describedby="dica-em-ap"></div>
+                    <div class="input-campo"><label for="inp-em-ap-2">2ª série</label><input type="text" id="inp-em-ap-2" inputmode="decimal" placeholder="Ex: 85,00" aria-describedby="dica-em-ap"></div>
+                    <div class="input-campo"><label for="inp-em-ap-3">3ª série</label><input type="text" id="inp-em-ap-3" inputmode="decimal" placeholder="Ex: 85,00" aria-describedby="dica-em-ap"></div>
+                    <div class="input-campo"><label for="inp-em-ap-4">4ª série</label><input type="text" id="inp-em-ap-4" inputmode="decimal" placeholder="Ex: 85,00" aria-describedby="dica-em-ap"></div>
                 </div>
 
                 <h3 class="secao-titulo">Aprendizado: proficiências no SAEB</h3>
                 <div class="input-grupo">
                     <div class="input-campo">
-                        <label for="inp-em-lp">Proficiência em Língua Portuguesa do <span class="etapa-nome etapa-em">Ensino Médio</span></label>
-                        <input type="number" id="inp-em-lp" inputmode="decimal" placeholder="Ex: 280.00" min="117" max="451" step="0.01" aria-describedby="dica-em-lp">
+                        <label for="inp-em-lp"><span class="disc disc-lp" aria-hidden="true">LP</span>Proficiência em Língua Portuguesa do <span class="etapa-nome etapa-em">Ensino Médio</span></label>
+                        <input type="text" id="inp-em-lp" inputmode="decimal" placeholder="Ex: 280,00" aria-describedby="dica-em-lp">
                         <p class="dica-campo" id="dica-em-lp">Média da escola no SAEB. De 117,00 a 451,00.</p>
                     </div>
                     <div class="input-campo">
-                        <label for="inp-em-mt">Proficiência em Matemática do <span class="etapa-nome etapa-em">Ensino Médio</span></label>
-                        <input type="number" id="inp-em-mt" inputmode="decimal" placeholder="Ex: 275.00" min="111" max="467" step="0.01" aria-describedby="dica-em-mt">
+                        <label for="inp-em-mt"><span class="disc disc-mt" aria-hidden="true">MAT</span>Proficiência em Matemática do <span class="etapa-nome etapa-em">Ensino Médio</span></label>
+                        <input type="text" id="inp-em-mt" inputmode="decimal" placeholder="Ex: 275,00" aria-describedby="dica-em-mt">
                         <p class="dica-campo" id="dica-em-mt">Média da escola no SAEB. De 111,00 a 467,00.</p>
                     </div>
                 </div>
@@ -167,17 +169,46 @@
             </svg>
             <span>Saiba mais</span>
         </button>
-        <div class="footer-creditos">
-            <img src="img/logo-ngr.png" alt="NGR-EDU" class="footer-logo" onerror="this.style.display='none'">
-            <span>Desenvolvido pelo <span class="sem-quebra">NGR-EDU · Seplag</span></span>
-        </div>
+        <button class="footer-creditos" id="btn-creditos" onclick="abrirPopup('popup-creditos')">
+            <img src="img/logo-ngr.png" alt="" class="footer-logo" onerror="this.style.display='none'">
+            <span>Desenvolvido pela equipe de Dados do <span class="sem-quebra">Núcleo de Gestão para Resultados</span></span>
+        </button>
+        <div class="footer-grupo">
+        <!-- Playlist dos videos explicativos no YouTube. Quando estiver pronta,
+             coloque o link no href: <a class="footer-btn" id="btn-youtube" href="https://www.youtube.com/playlist?list=..." ...>.
+             Sem href o botao aparece mas nao leva a lugar nenhum. -->
+        <a class="footer-btn" id="btn-youtube" target="_blank" rel="noopener noreferrer" aria-label="Vídeos no YouTube">
+            <svg class="footer-btn-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#ff0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1 31.4 31.4 0 0 0 .5-5.8 31.4 31.4 0 0 0-.5-5.8z"/>
+                <path fill="#ffffff" d="M9.6 15.6 15.8 12 9.6 8.4z"/>
+            </svg>
+            <span>Vídeos</span>
+        </a>
         <button class="footer-btn" id="btn-whatsapp" onclick="abrirPopup('popup-whatsapp')" aria-label="WhatsApp">
             <svg class="footer-btn-icone" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
             <span>WhatsApp</span>
         </button>
+        </div>
     </footer>
+
+    <!-- Popup: Creditos -->
+    <div class="popup-overlay" id="popup-creditos" onclick="fecharPopup(event, 'popup-creditos')">
+        <div class="popup-conteudo" onclick="event.stopPropagation()">
+            <button class="popup-fechar" onclick="fecharPopupDireto('popup-creditos')" aria-label="Fechar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="popup-header">
+                <h3>Quem desenvolveu</h3>
+            </div>
+            <div class="popup-body popup-creditos-body">
+                <img src="img/ngr-educacao-seplag.webp" alt="NGR-Educação · Seplag" class="popup-banner" width="800" height="327">
+                <p>Desenvolvido pela equipe de Dados do <strong>Núcleo de Gestão para Resultados (NGR-Educação)</strong> da Seplag de Pernambuco.</p>
+                <p>Em caso de dúvidas ou de possíveis inconsistências, fale com a equipe pelo botão WhatsApp.</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Popup: Saiba Mais -->
     <div class="popup-overlay" id="popup-saibamais" onclick="fecharPopup(event, 'popup-saibamais')">
@@ -193,9 +224,10 @@
                 <ol class="popup-lista">
                     <li>Este simulador foi desenvolvido pelo Núcleo da Seplag para esclarecer como é calculado o IDEB da escola. Os resultados apresentados não são oficiais: o IDEB oficial é divulgado pelo Inep/MEC.</li>
                     <li>O IDEB é calculado separadamente para cada etapa (Anos Iniciais, Anos Finais e Ensino Médio). Não existe um IDEB único da escola.</li>
-                    <li><strong>IDEB = N × P.</strong> N é o aprendizado: a média das notas de Língua Portuguesa e Matemática no SAEB, convertidas para uma escala de 0 a 10. P é o fluxo: a média harmônica das taxas de aprovação dos anos da etapa, de 0 a 1.</li>
+                    <li><strong>IDEB = N × P.</strong> N é a nota SAEB da etapa: a média das notas de Língua Portuguesa e Matemática no SAEB, convertidas para uma escala de 0 a 10. P é o rendimento: a média harmônica das taxas de aprovação dos anos da etapa, de 0 a 1. O IDEB, por consequência, também vai de 0 a 10.</li>
                     <li>Cada nota é convertida pela fórmula (proficiência − limite inferior) ÷ (limite superior − limite inferior) × 10, com os limites fixados pelo Inep a partir do SAEB 1997.</li>
                     <li>Na média harmônica, uma taxa de aprovação baixa pesa mais do que uma alta: reprovar em um único ano derruba o fluxo da etapa inteira.</li>
+                    <li>Ano que a escola não oferece fica em branco e fora do cálculo. Taxa de aprovação zero também fica fora, porque não existe média harmônica com zero (é como o Inep calcula). Exemplo: 100%, 90% e 80% dão rendimento de 0,89, com ou sem um quarto ano em branco ou com 0%.</li>
                     <li>O IDEB é divulgado com uma casa decimal. Pequenas diferenças podem ocorrer devido a arredondamentos.</li>
                 </ol>
             </div>
@@ -223,7 +255,7 @@
         </div>
     </div>
 
-    <script src="motor.js"></script>
-    <script src="wizard.js"></script>
+    <script src="motor.js?v=20261021a"></script>
+    <script src="wizard.js?v=20261021a"></script>
 </body>
 </html>
